@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>登录 — 旅游方案管理系统</title>
+<style>
+  :root { --blue:#1A365D; --coral:#E8734A; --coral-hover:#D15D35; --gray:#718096; --bg:#F7FAFC; }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);min-height:100vh;display:flex;align-items:center;justify-content:center;color:#2D3748}
+  /* 背景装饰 */
+  .bg-deco{position:fixed;inset:0;pointer-events:none;z-index:0}
+  .bg-deco .circle{position:absolute;border-radius:50%;opacity:.06}
+  .bg-deco .c1{width:600px;height:600px;background:var(--coral);top:-200px;right:-150px}
+  .bg-deco .c2{width:400px;height:400px;background:var(--blue);bottom:-100px;left:-100px}
+  .bg-deco .c3{width:200px;height:200px;background:var(--coral);top:50%;left:10%;opacity:.04}
+  /* 卡片 */
+  .login-wrap{position:relative;z-index:1;display:flex;background:#fff;border-radius:24px;box-shadow:0 20px 60px rgba(26,54,93,.12);overflow:hidden;width:880px;max-width:94vw;min-height:520px}
+  /* 左侧视觉区 */
+  .login-visual{width:42%;background:linear-gradient(160deg,#1A365D 0%,#2B6CB0 40%,#E8734A 100%);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:48px 32px;color:#fff;position:relative;overflow:hidden}
+  .login-visual::before{content:'';position:absolute;inset:0;background:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")}
+  .login-visual>*{position:relative;z-index:1}
+  .visual-icon{font-size:64px;margin-bottom:20px;filter:drop-shadow(0 4px 12px rgba(0,0,0,.2))}
+  .visual-title{font-size:24px;font-weight:700;margin-bottom:8px;letter-spacing:.5px}
+  .visual-desc{font-size:13px;opacity:.8;text-align:center;line-height:1.7}
+  /* 右侧表单区 */
+  .login-form{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:48px 44px}
+  .login-form .form-inner{width:100%;max-width:340px}
+  .login-form h2{font-size:22px;font-weight:600;color:var(--blue);margin-bottom:4px}
+  .login-form .sub{font-size:13px;color:var(--gray);margin-bottom:32px}
+  .login-form .field{margin-bottom:18px}
+  .login-form .field label{display:block;font-size:13px;font-weight:500;color:#4A5568;margin-bottom:6px}
+  .login-form .field input{width:100%;padding:11px 14px;border:1.5px solid #E2E8F0;border-radius:10px;font-size:14px;outline:none;color:#2D3748;transition:border-color .2s,box-shadow .2s}
+  .login-form .field input:focus{border-color:var(--coral);box-shadow:0 0 0 3px rgba(232,115,74,.12)}
+  .login-form .error{color:#E53E3E;font-size:12px;text-align:center;min-height:20px;line-height:20px}
+  .login-form .btn-submit{width:100%;padding:12px;background:var(--coral);color:#fff;border:none;border-radius:10px;font-size:15px;font-weight:600;cursor:pointer;transition:all .2s;margin-top:4px}
+  .login-form .btn-submit:hover{background:var(--coral-hover);transform:translateY(-1px);box-shadow:0 6px 20px rgba(232,115,74,.35)}
+  .login-form .btn-submit:disabled{opacity:.6;cursor:not-allowed;transform:none;box-shadow:none}
+  .login-form .switch{text-align:center;margin-top:22px;font-size:13px;color:var(--gray)}
+  .login-form .switch a{color:var(--coral);cursor:pointer;text-decoration:none;font-weight:500}
+  .login-form .switch a:hover{text-decoration:underline}
+  .login-form .success{color:#38A169;font-size:12px;text-align:center;min-height:20px;line-height:20px}
+  /* 注册表单默认隐藏 */
+  #reg-inner{display:none}
+  /* loading dot */
+  @keyframes bounce{0%,100%{opacity:.3;transform:translateY(0)}50%{opacity:1;transform:translateY(-3px)}}
+  .loading-dots span{display:inline-block;animation:bounce 1.2s infinite}
+  .loading-dots span:nth-child(2){animation-delay:.15s}
+  .loading-dots span:nth-child(3){animation-delay:.3s}
+  /* 响应式 */
+  @media(max-width:700px){
+    .login-wrap{flex-direction:column;min-height:auto}
+    .login-visual{width:100%;padding:32px 24px}
+    .visual-icon{font-size:42px;margin-bottom:12px}
+    .visual-title{font-size:20px}
+    .login-form{padding:32px 28px}
+  }
+</style>
+</head>
+<body>
+
+<div class="bg-deco">
+  <div class="circle c1"></div>
+  <div class="circle c2"></div>
+  <div class="circle c3"></div>
+</div>
+
+<div class="login-wrap">
+  <!-- 左侧视觉 -->
+  <div class="login-visual">
+    <div class="visual-icon">🌍</div>
+    <div class="visual-title">旅途时光</div>
+    <div class="visual-desc">从千年古都到热带海岛<br>我们帮你规划最完美的旅程</div>
+  </div>
+
+  <!-- 右侧表单 -->
+  <div class="login-form">
+    <!-- 登录 -->
+    <div class="form-inner" id="login-inner">
+      <h2>欢迎回来</h2>
+      <div class="sub">登录以继续使用</div>
+      <div class="field"><label>手机号</label><input type="tel" id="login-phone" placeholder="请输入手机号" maxlength="11" autocomplete="tel"></div>
+      <div class="field"><label>密码</label><input type="password" id="login-password" placeholder="请输入密码" autocomplete="current-password"></div>
+      <div class="error" id="login-error"></div>
+      <button class="btn-submit" id="login-btn" onclick="doLogin()">登 录</button>
+      <div class="switch">还没有账号？<a onclick="showForm('reg')">立即注册</a></div>
+    </div>
+    <!-- 注册 -->
+    <div class="form-inner" id="reg-inner">
+      <h2>创建账号</h2>
+      <div class="sub">加入旅途时光，开启你的旅行</div>
+      <div class="field"><label>姓名</label><input type="text" id="reg-name" placeholder="您的真实姓名" autocomplete="name"></div>
+      <div class="field"><label>手机号</label><input type="tel" id="reg-phone" placeholder="11位手机号" maxlength="11" autocomplete="tel"></div>
+      <div class="field"><label>密码</label><input type="password" id="reg-password" placeholder="至少6位" autocomplete="new-password"></div>
+      <div class="field"><label>确认密码</label><input type="password" id="reg-password2" placeholder="再次输入" autocomplete="new-password"></div>
+      <div class="error" id="reg-error"></div>
+      <div class="success" id="reg-msg"></div>
+      <button class="btn-submit" id="reg-btn" onclick="doRegister()">注 册</button>
+      <div class="switch">已有账号？<a onclick="showForm('login')">返回登录</a></div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ========== 配置 ==========
+const API = 'http://localhost:5001/api';
+
+// 页面加载时先检查是否已有有效 token
+(async function init() {
+  const t = localStorage.getItem('travel_token');
+  if (!t) return; // 没 token，留在登录页
+  try {
+    const r = await fetch(API + '/auth/me', { headers: {'Authorization': 'Bearer ' + t} });
+    const data = await r.json();
+    if (r.ok && data.user) {
+      redirectByRole(data.user.role);
+    } else {
+      localStorage.removeItem('travel_token');
+    }
+  } catch(e) {}
+})();
+
+// ========== 角色路由 ==========
+function redirectByRole(role) {
+  if (role === 'admin') {
+    window.location.href = 'index.html';
+  } else {
+    window.location.href = 'user.html';
+  }
+}
+
+// ========== 表单切换 ==========
+function showForm(type) {
+  document.getElementById('login-inner').style.display = type==='login' ? '' : 'none';
+  document.getElementById('reg-inner').style.display = type==='reg' ? '' : 'none';
+  document.getElementById('login-error').textContent = '';
+  document.getElementById('reg-error').textContent = '';
+  document.getElementById('reg-msg').textContent = '';
+}
+
+// ========== 账号历史管理 ==========
+function saveAccountToHistory(token, user) {
+  let accounts = [];
+  try { accounts = JSON.parse(localStorage.getItem('travel_accounts') || '[]'); } catch(e) {}
+  accounts = accounts.filter(a => a.id !== user.id);
+  accounts.unshift({ id: user.id, name: user.name, role: user.role, email: user.email || '', token: token, lastLogin: new Date().toISOString() });
+  if (accounts.length > 5) accounts = accounts.slice(0, 5);
+  localStorage.setItem('travel_accounts', JSON.stringify(accounts));
+}
+
+// ========== 登录 ==========
+async function doLogin() {
+  const phone = document.getElementById('login-phone').value.trim();
+  const pw = document.getElementById('login-password').value;
+  const err = document.getElementById('login-error');
+  const btn = document.getElementById('login-btn');
+  if (!phone) { err.textContent = '请输入手机号'; return; }
+  if (!pw) { err.textContent = '请输入密码'; return; }
+  btn.disabled = true; btn.innerHTML = '<span class="loading-dots"><span>验证中</span><span>.</span><span>.</span><span>.</span></span>';
+  err.textContent = '';
+  try {
+    const r = await fetch(API + '/auth/login', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({phone, password:pw})
+    });
+    const data = await r.json();
+    if (!r.ok) { err.textContent = data.error || '登录失败'; return; }
+    // 保存 token
+    localStorage.setItem('travel_token', data.token);
+    // 保存账号到切换列表
+    saveAccountToHistory(data.token, data.user);
+    // 按角色跳转
+    const role = data.user.role || 'user';
+    redirectByRole(role);
+  } catch(e) { err.textContent = '网络错误：请确认后端已启动'; }
+  finally { btn.disabled = false; btn.textContent = '登 录'; }
+}
+
+// ========== 注册 ==========
+async function doRegister() {
+  const name = document.getElementById('reg-name').value.trim();
+  const phone = document.getElementById('reg-phone').value.trim();
+  const pw = document.getElementById('reg-password').value;
+  const pw2 = document.getElementById('reg-password2').value;
+  const err = document.getElementById('reg-error');
+  const msg = document.getElementById('reg-msg');
+  const btn = document.getElementById('reg-btn');
+  if (!name) { err.textContent = '请输入姓名'; return; }
+  if (!phone || phone.length<11) { err.textContent = '请输入正确手机号'; return; }
+  if (!pw || pw.length<6) { err.textContent = '密码至少6位'; return; }
+  if (pw !== pw2) { err.textContent = '两次密码不一致'; return; }
+  btn.disabled = true; btn.textContent = '注册中...'; err.textContent = ''; msg.textContent = '';
+  try {
+    const r = await fetch(API + '/auth/register', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({name, phone, password:pw})
+    });
+    const data = await r.json();
+    if (!r.ok) { err.textContent = data.error || '注册失败'; return; }
+    msg.textContent = '注册成功，即将跳转...';
+    localStorage.setItem('travel_token', data.token);
+    saveAccountToHistory(data.token, data.user);
+    setTimeout(() => redirectByRole(data.user.role || 'user'), 500);
+  } catch(e) { err.textContent = '网络错误：请确认后端已启动'; }
+  finally { btn.disabled = false; btn.textContent = '注 册'; }
+}
+
+// 回车键提交
+document.addEventListener('keydown', function(e) {
+  if (e.key !== 'Enter') return;
+  if (document.getElementById('reg-inner').style.display !== 'none') {
+    doRegister();
+  } else {
+    doLogin();
+  }
+});
+</script>
+</body>
+</html>

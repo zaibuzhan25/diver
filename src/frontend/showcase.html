@@ -1,0 +1,907 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nebula Coral · 设计系统</title>
+<link rel="stylesheet" href="modern-design.css">
+<style>
+  /* Demo 页面专属 */
+  body { font-size: 14px; position: relative; }
+  .demo-wrapper {
+    position: relative;
+    z-index: 1;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 var(--space-6);
+  }
+
+  /* ── Theme Toggle ── */
+  .demo-theme-toggle {
+    position: fixed;
+    top: 16px;
+    right: 20px;
+    z-index: 500;
+    display: flex;
+    gap: 4px;
+    padding: 4px;
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-full);
+    backdrop-filter: var(--glass-blur);
+  }
+  .demo-theme-toggle button {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    font-size: 16px;
+    transition: all var(--duration-fast) var(--ease-out);
+    color: var(--text-secondary);
+  }
+  .demo-theme-toggle button.active {
+    background: var(--gradient-accent);
+    color: #fff;
+    box-shadow: 0 0 12px rgba(255,141,83,0.3);
+  }
+  .demo-theme-toggle button:hover:not(.active) {
+    color: var(--text-primary);
+    background: var(--glass-bg-hover);
+  }
+
+  /* ── Hero ── */
+  .demo-hero {
+    padding: 80px 0 48px;
+    text-align: center;
+  }
+  .demo-hero h1 {
+    font-size: clamp(36px, 5vw, 56px);
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    margin-bottom: 12px;
+  }
+  .demo-hero .subtitle {
+    font-size: 18px;
+    color: var(--text-secondary);
+    max-width: 480px;
+    margin: 0 auto 32px;
+    line-height: 1.7;
+  }
+  .demo-hero .tag-row {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  /* ── Stats Grid ── */
+  .demo-stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin-bottom: 48px;
+  }
+  .demo-stat-card {
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-lg);
+    padding: 24px;
+    backdrop-filter: var(--glass-blur);
+    transition: all var(--duration-normal) var(--ease-out);
+    text-align: center;
+  }
+  .demo-stat-card:hover {
+    background: var(--glass-bg-hover);
+    border-color: var(--glass-border-hover);
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-md);
+  }
+  .demo-stat-card .stat-value {
+    font-size: 36px;
+    font-weight: 700;
+    margin-bottom: 4px;
+    background: var(--gradient-accent);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .demo-stat-card .stat-label {
+    font-size: 13px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  .demo-stat-card .stat-trend {
+    font-size: 12px;
+    margin-top: 8px;
+    color: var(--success);
+  }
+
+  /* ── Section ── */
+  .demo-section {
+    margin-bottom: 48px;
+  }
+  .demo-section h2 {
+    font-size: 24px;
+    font-weight: 600;
+    margin-bottom: 4px;
+  }
+  .demo-section .section-desc {
+    font-size: 13px;
+    color: var(--text-muted);
+    margin-bottom: 20px;
+  }
+
+  /* ── Component Grid ── */
+  .demo-comp-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 16px;
+  }
+  .demo-comp-card {
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-lg);
+    padding: 20px;
+    backdrop-filter: var(--glass-blur);
+    transition: all var(--duration-normal) var(--ease-out);
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  .demo-comp-card:hover {
+    background: var(--glass-bg-hover);
+    border-color: var(--glass-border-hover);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+  }
+  .demo-comp-card .comp-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    flex-shrink: 0;
+  }
+  .demo-comp-card .comp-info h4 {
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 2px;
+  }
+  .demo-comp-card .comp-info p {
+    font-size: 12px;
+    color: var(--text-muted);
+  }
+
+  /* ── Button Row ── */
+  .demo-btn-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    align-items: center;
+    margin-bottom: 16px;
+  }
+  .demo-btn-row .label {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-right: 8px;
+    min-width: 60px;
+  }
+
+  /* ── Demo table card ── */
+  .demo-table-card {
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    backdrop-filter: var(--glass-blur);
+  }
+  .demo-table-card .table-header {
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--glass-border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .demo-table-card .table-header h3 {
+    font-size: 15px;
+    font-weight: 600;
+  }
+
+  /* ── Footer ── */
+  .demo-footer {
+    text-align: center;
+    padding: 32px 0 48px;
+    border-top: 1px solid var(--glass-border);
+    margin-top: 32px;
+  }
+  .demo-footer p {
+    font-size: 12px;
+    color: var(--text-muted);
+  }
+
+  /* ── Toast Trigger ── */
+  .demo-toast-area {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 400;
+    display: flex;
+    gap: 8px;
+  }
+
+  /* ── Glow Orbs ── */
+  .glow-orb {
+    position: fixed;
+    border-radius: 50%;
+    filter: blur(80px);
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.3;
+    animation: orbFloat 8s ease-in-out infinite;
+  }
+  .glow-orb.orb-1 {
+    width: 300px; height: 300px;
+    background: var(--accent-1);
+    top: -100px; left: -100px;
+    animation-delay: 0s;
+  }
+  .glow-orb.orb-2 {
+    width: 250px; height: 250px;
+    background: #7C3AED;
+    bottom: -80px; right: -80px;
+    animation-delay: -4s;
+  }
+  .glow-orb.orb-3 {
+    width: 200px; height: 200px;
+    background: #00B4D8;
+    top: 50%; left: 50%;
+    animation-delay: -2s;
+  }
+  @keyframes orbFloat {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    25% { transform: translate(30px, -20px) scale(1.05); }
+    50% { transform: translate(-10px, 20px) scale(0.95); }
+    75% { transform: translate(-20px, -10px) scale(1.02); }
+  }
+
+  @media (max-width: 768px) {
+    .demo-stats { grid-template-columns: repeat(2, 1fr); }
+    .demo-hero { padding-top: 60px; }
+  }
+  @media (max-width: 480px) {
+    .demo-stats { grid-template-columns: 1fr; }
+    .demo-btn-row { flex-direction: column; align-items: flex-start; }
+  }
+</style>
+</head>
+<body>
+
+<!-- 光晕装饰 -->
+<div class="glow-orb orb-1"></div>
+<div class="glow-orb orb-2"></div>
+<div class="glow-orb orb-3"></div>
+
+<!-- 主题切换 -->
+<div class="demo-theme-toggle">
+  <button onclick="switchTheme('dark')" id="theme-dark" class="active" title="深色模式">🌙</button>
+  <button onclick="switchTheme('light')" id="theme-light" title="浅色模式">☀️</button>
+</div>
+
+<div class="demo-wrapper">
+
+  <!-- ══ Hero ══ -->
+  <header class="demo-hero">
+    <h1>
+      <span class="text-gradient">Nebula Coral</span>
+    </h1>
+    <p class="subtitle">
+      深空科技美学 &times; 玻璃拟态 &times; 微交互<br>
+      为旅途时光打造的下一代设计语言
+    </p>
+    <div class="tag-row">
+      <span class="badge badge-primary">Dark Mode First</span>
+      <span class="badge badge-cosmic">Glassmorphism</span>
+      <span class="badge badge-success">Micro-interactions</span>
+      <span class="badge badge-info">Responsive</span>
+    </div>
+  </header>
+
+  <!-- ══ 统计面板 ══ -->
+  <div class="demo-stats fade-in-up">
+    <div class="demo-stat-card">
+      <div class="stat-value">128</div>
+      <div class="stat-label">目的地</div>
+      <div class="stat-trend">↑ 12% 本月</div>
+    </div>
+    <div class="demo-stat-card" style="animation-delay: 0.1s;">
+      <div class="stat-value">3,847</div>
+      <div class="stat-label">旅游方案</div>
+      <div class="stat-trend">↑ 24% 本月</div>
+    </div>
+    <div class="demo-stat-card" style="animation-delay: 0.2s;">
+      <div class="stat-value">9,562</div>
+      <div class="stat-label">注册用户</div>
+      <div class="stat-trend">↑ 18% 本月</div>
+    </div>
+    <div class="demo-stat-card" style="animation-delay: 0.3s;">
+      <div class="stat-value">98.7%</div>
+      <div class="stat-label">满意度</div>
+      <div class="stat-trend">↑ 2.3% 本月</div>
+    </div>
+  </div>
+
+  <!-- ══ 按钮系统 ══ -->
+  <section class="demo-section">
+    <h2>🎛 按钮系统</h2>
+    <p class="section-desc">层次化按钮设计，支持波纹反馈与悬浮提升</p>
+
+    <div class="demo-btn-row"><span class="label">Primary</span>
+      <button class="btn-primary">主要操作</button>
+      <button class="btn-primary btn-lg">大号按钮</button>
+      <button class="btn-primary btn-sm">小号按钮</button>
+    </div>
+    <div class="demo-btn-row"><span class="label">Secondary</span>
+      <button class="btn-secondary">次要操作</button>
+      <button class="btn-secondary btn-lg">大号按钮</button>
+      <button class="btn-secondary btn-sm">小号按钮</button>
+    </div>
+    <div class="demo-btn-row"><span class="label">Ghost</span>
+      <button class="btn-ghost">幽灵按钮</button>
+      <button class="btn-ghost">取消</button>
+    </div>
+    <div class="demo-btn-row"><span class="label">Danger</span>
+      <button class="btn-danger">删除操作</button>
+      <button class="btn-danger btn-sm">移除</button>
+    </div>
+  </section>
+
+  <!-- ══ 徽章系统 ══ -->
+  <section class="demo-section">
+    <h2>🏷 徽章 & 标签</h2>
+    <p class="section-desc">语义化色彩，毛玻璃质感</p>
+    <div class="demo-btn-row">
+      <span class="badge badge-primary">Primary</span>
+      <span class="badge badge-success">Success</span>
+      <span class="badge badge-warning">Warning</span>
+      <span class="badge badge-error">Error</span>
+      <span class="badge badge-info">Info</span>
+      <span class="badge badge-cosmic">Cosmic</span>
+    </div>
+  </section>
+
+  <!-- ══ 状态指示器 ══ -->
+  <section class="demo-section">
+    <h2>🔵 状态指示器</h2>
+    <p class="section-desc">微交互：在线状态带发光效果</p>
+    <div class="demo-btn-row">
+      <div class="flex-center gap-2"><span class="status-dot online"></span> 在线</div>
+      <div class="flex-center gap-2"><span class="status-dot warning"></span> 忙碌</div>
+      <div class="flex-center gap-2"><span class="status-dot idle"></span> 离线</div>
+      <div class="flex-center gap-2"><span class="status-dot offline"></span> 错误</div>
+    </div>
+  </section>
+
+  <!-- ══ 卡片系统 ══ -->
+  <section class="demo-section">
+    <h2>🃏 卡片系统</h2>
+    <p class="section-desc">玻璃拟态卡片 — hover 时悬浮 + 发光</p>
+    <div class="demo-comp-grid stagger">
+      <div class="demo-comp-card">
+        <div class="comp-icon" style="background:rgba(255,141,83,0.15);">🗺</div>
+        <div class="comp-info"><h4>目的地管理</h4><p>128 个热门目的地</p></div>
+      </div>
+      <div class="demo-comp-card">
+        <div class="comp-icon" style="background:rgba(0,214,143,0.15);">📋</div>
+        <div class="comp-info"><h4>方案中心</h4><p>3,847 条旅游方案</p></div>
+      </div>
+      <div class="demo-comp-card">
+        <div class="comp-icon" style="background:rgba(96,165,250,0.15);">👥</div>
+        <div class="comp-info"><h4>用户管理</h4><p>9,562 位注册用户</p></div>
+      </div>
+      <div class="demo-comp-card">
+        <div class="comp-icon" style="background:rgba(124,58,237,0.15);">📊</div>
+        <div class="comp-info"><h4>数据统计</h4><p>实时仪表盘监控</p></div>
+      </div>
+      <div class="demo-comp-card">
+        <div class="comp-icon" style="background:rgba(0,182,212,0.15);">🔔</div>
+        <div class="comp-info"><h4>系统公告</h4><p>3 条活跃公告</p></div>
+      </div>
+      <div class="demo-comp-card">
+        <div class="comp-icon" style="background:rgba(255,184,0,0.15);">⚡</div>
+        <div class="comp-info"><h4>快速操作</h4><p>一键创建方案</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ 渐变文字 ══ -->
+  <section class="demo-section">
+    <h2>✨ 渐变文字</h2>
+    <p class="section-desc">多套渐变方案，适用于标题与强调</p>
+    <div style="display:flex;flex-direction:column;gap:12px;font-size:24px;font-weight:700;">
+      <span class="text-gradient">Nebula Coral · 星云珊瑚</span>
+      <span class="text-gradient-fire">Fire Gradient · 熔岩渐变</span>
+      <span class="text-gradient-ocean">Ocean Gradient · 海洋渐变</span>
+      <span class="text-gradient-cosmic">Cosmic Gradient · 星空渐变</span>
+    </div>
+  </section>
+
+  <!-- ══ 进度条 ══ -->
+  <section class="demo-section">
+    <h2>📊 进度条</h2>
+    <p class="section-desc">带流光动画的渐变进度条</p>
+    <div style="display:flex;flex-direction:column;gap:16px;max-width:400px;">
+      <div>
+        <div class="flex-between mb-4">
+          <span class="text-sm text-secondary">目的地覆盖</span>
+          <span class="text-sm text-accent">85%</span>
+        </div>
+        <div class="progress"><div class="progress-bar" style="width:85%"></div></div>
+      </div>
+      <div>
+        <div class="flex-between mb-4">
+          <span class="text-sm text-secondary">用户活跃度</span>
+          <span class="text-sm" style="color:var(--success)">72%</span>
+        </div>
+        <div class="progress"><div class="progress-bar" style="width:72%;background:var(--gradient-ocean)"></div></div>
+      </div>
+      <div>
+        <div class="flex-between mb-4">
+          <span class="text-sm text-secondary">方案转化率</span>
+          <span class="text-sm" style="color:#A78BFA">94%</span>
+        </div>
+        <div class="progress"><div class="progress-bar" style="width:94%;background:var(--gradient-cosmic)"></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ 输入系统 ══ -->
+  <section class="demo-section">
+    <h2>⌨ 输入系统</h2>
+    <p class="section-desc">玻璃质感输入框，支持 hover / focus / error 状态</p>
+    <div style="max-width:400px;display:flex;flex-direction:column;gap:16px;">
+      <div class="form-group">
+        <label class="form-label">目的地名称</label>
+        <input type="text" class="form-input" placeholder="输入目的地名称...">
+      </div>
+      <div class="form-group">
+        <label class="form-label">邮箱地址</label>
+        <input type="email" class="form-input" placeholder="you@example.com">
+      </div>
+      <div class="form-group">
+        <label class="form-label">错误状态</label>
+        <input type="text" class="form-input error" value="无效输入" placeholder="">
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ 表格系统 ══ -->
+  <section class="demo-section">
+    <h2>📋 数据表格</h2>
+    <p class="section-desc">玻璃面板 + 悬浮行高亮 + 粘性表头</p>
+    <div class="demo-table-card">
+      <div class="table-header">
+        <h3>热门目的地</h3>
+        <span class="badge badge-primary">共 6 条</span>
+      </div>
+      <div style="overflow-x:auto;">
+        <table>
+          <thead>
+            <tr>
+              <th>目的地</th>
+              <th>地区</th>
+              <th>热度</th>
+              <th>状态</th>
+              <th>操作</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td style="color:var(--text-primary);font-weight:500;">🏔 稻城亚丁</td>
+              <td>四川 · 甘孜</td>
+              <td><div class="progress" style="width:80px;"><div class="progress-bar" style="width:95%"></div></div></td>
+              <td><span class="badge badge-success">热门</span></td>
+              <td><button class="btn-ghost btn-sm">详情</button></td>
+            </tr>
+            <tr>
+              <td style="color:var(--text-primary);font-weight:500;">🌊 三亚湾</td>
+              <td>海南 · 三亚</td>
+              <td><div class="progress" style="width:80px;"><div class="progress-bar" style="width:88%"></div></div></td>
+              <td><span class="badge badge-success">热门</span></td>
+              <td><button class="btn-ghost btn-sm">详情</button></td>
+            </tr>
+            <tr>
+              <td style="color:var(--text-primary);font-weight:500;">🏯 京都</td>
+              <td>日本 · 关西</td>
+              <td><div class="progress" style="width:80px;"><div class="progress-bar" style="width:76%"></div></div></td>
+              <td><span class="badge badge-info">推荐</span></td>
+              <td><button class="btn-ghost btn-sm">详情</button></td>
+            </tr>
+            <tr>
+              <td style="color:var(--text-primary);font-weight:500;">🏛 罗马</td>
+              <td>意大利 · 拉齐奥</td>
+              <td><div class="progress" style="width:80px;"><div class="progress-bar" style="width:62%"></div></div></td>
+              <td><span class="badge badge-warning">淡季</span></td>
+              <td><button class="btn-ghost btn-sm">详情</button></td>
+            </tr>
+            <tr>
+              <td style="color:var(--text-primary);font-weight:500;">🗿 复活节岛</td>
+              <td>智利 · 瓦尔帕莱索</td>
+              <td><div class="progress" style="width:80px;"><div class="progress-bar" style="width:35%"></div></div></td>
+              <td><span class="badge badge-error">维护中</span></td>
+              <td><button class="btn-ghost btn-sm">详情</button></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ Toast 演示 ══ -->
+  <section class="demo-section">
+    <h2>🔔 Toast 通知</h2>
+    <p class="section-desc">从右侧滑入的毛玻璃通知</p>
+    <div class="demo-btn-row">
+      <button class="btn-secondary" onclick="demoToast('success','操作成功完成！')">✅ 成功通知</button>
+      <button class="btn-secondary" onclick="demoToast('error','删除失败，请重试')">❌ 错误通知</button>
+      <button class="btn-secondary" onclick="demoToast('warning','请先完善用户信息')">⚠ 警告通知</button>
+      <button class="btn-secondary" onclick="demoToast('info','系统将于 22:00 维护')">ℹ 信息通知</button>
+    </div>
+  </section>
+
+  <!-- ══ 加载骨骼 ══ -->
+  <section class="demo-section">
+    <h2>💀 Skeleton 占位</h2>
+    <p class="section-desc">流光亮骨架动画</p>
+    <div style="display:flex;flex-direction:column;gap:12px;max-width:400px;">
+      <div class="skeleton" style="height:20px;width:60%"></div>
+      <div class="skeleton" style="height:14px;width:90%"></div>
+      <div class="skeleton" style="height:14px;width:80%"></div>
+      <div class="skeleton" style="height:100px;width:100%"></div>
+    </div>
+  </section>
+
+  <!-- ══ 分页器 ══ -->
+  <section class="demo-section">
+    <h2>📄 分页器</h2>
+    <p class="section-desc">玻璃拟态分页，支持激活态渐变高亮</p>
+    <div class="pagination">
+      <button class="page-btn" disabled>«</button>
+      <button class="page-btn active">1</button>
+      <button class="page-btn">2</button>
+      <button class="page-btn">3</button>
+      <button class="page-btn">4</button>
+      <button class="page-btn">5</button>
+      <span class="page-info">...</span>
+      <button class="page-btn">12</button>
+      <button class="page-btn">»</button>
+    </div>
+    <div style="margin-top:12px;">
+      <div class="pagination pagination-sm">
+        <button class="page-btn" disabled>‹</button>
+        <button class="page-btn active">1</button>
+        <button class="page-btn">2</button>
+        <button class="page-btn">3</button>
+        <button class="page-btn">›</button>
+        <span class="page-info">1/3 页</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ 下拉菜单 ══ -->
+  <section class="demo-section">
+    <h2>📂 下拉菜单</h2>
+    <p class="section-desc">Hover 展开，支持危险操作项和分隔线</p>
+    <div style="display:flex;gap:16px;align-items:flex-start;">
+      <div class="dropdown">
+        <button class="btn-secondary btn-sm" style="pointer-events:none;">账户操作 ▾</button>
+        <div class="dropdown-menu show" style="position:relative;top:0;opacity:1;visibility:visible;transform:none;margin-top:4px;">
+          <button class="dropdown-item">👤 个人资料</button>
+          <button class="dropdown-item">⚙ 账户设置</button>
+          <button class="dropdown-item">📋 我的方案</button>
+          <div class="dropdown-divider"></div>
+          <button class="dropdown-item danger">🚪 退出登录</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ 空状态 ══ -->
+  <section class="demo-section">
+    <h2>📭 空状态</h2>
+    <p class="section-desc">多种空状态变体，含操作引导</p>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px;">
+      <div class="card" style="overflow:visible;">
+        <div class="empty-state">
+          <div class="empty-icon">📋</div>
+          <h3>暂无旅游方案</h3>
+          <p>还没有创建任何方案，点击下方按钮开始创建你的第一个旅行计划</p>
+          <button class="btn-primary btn-sm empty-action">+ 新建方案</button>
+        </div>
+      </div>
+      <div class="card" style="overflow:visible;">
+        <div class="empty-state empty-state-sm">
+          <div class="empty-icon">🔍</div>
+          <h3>未找到结果</h3>
+          <p>没有匹配的目的地，试试调整搜索条件</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ 加载指示器 ══ -->
+  <section class="demo-section">
+    <h2>⏳ 加载指示器</h2>
+    <p class="section-desc">旋转器 + 三点跳动 + 流光骨架</p>
+    <div class="demo-btn-row">
+      <div class="flex-center gap-3">
+        <div class="spinner spinner-sm"></div>
+        <span class="text-sm text-secondary">小号</span>
+      </div>
+      <div class="flex-center gap-3">
+        <div class="spinner"></div>
+        <span class="text-sm text-secondary">默认</span>
+      </div>
+      <div class="flex-center gap-3">
+        <div class="spinner spinner-lg"></div>
+        <span class="text-sm text-secondary">大号</span>
+      </div>
+      <div class="flex-center gap-3">
+        <div class="dots-loader"><span></span><span></span><span></span></div>
+        <span class="text-sm text-secondary">加载中</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ 复选框 & 单选框 ══ -->
+  <section class="demo-section">
+    <h2>☑ 复选框 & 单选框</h2>
+    <p class="section-desc">自定义样式，与设计系统统一</p>
+    <div style="display:flex;gap:24px;flex-wrap:wrap;">
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        <label class="checkbox-wrap">
+          <input type="checkbox" checked><span class="check-mark"></span> 包含酒店
+        </label>
+        <label class="checkbox-wrap">
+          <input type="checkbox"><span class="check-mark"></span> 包含机票
+        </label>
+        <label class="checkbox-wrap">
+          <input type="checkbox" checked><span class="check-mark"></span> 包含景点门票
+        </label>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        <label class="radio-wrap">
+          <input type="radio" name="demo-radio" checked><span class="radio-mark"></span> 经济型
+        </label>
+        <label class="radio-wrap">
+          <input type="radio" name="demo-radio"><span class="radio-mark"></span> 舒适型
+        </label>
+        <label class="radio-wrap">
+          <input type="radio" name="demo-radio"><span class="radio-mark"></span> 豪华型
+        </label>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ 面包屑 ══ -->
+  <section class="demo-section">
+    <h2>🍞 面包屑导航</h2>
+    <p class="section-desc">层级导航指示</p>
+    <div class="breadcrumb">
+      <a>🏠 首页</a>
+      <span class="crumb-sep">›</span>
+      <a>旅游方案</a>
+      <span class="crumb-sep">›</span>
+      <a>亚洲线路</a>
+      <span class="crumb-sep">›</span>
+      <span class="crumb-current">日本深度游</span>
+    </div>
+  </section>
+
+  <!-- ══ 搜索框 ══ -->
+  <section class="demo-section">
+    <h2>🔍 搜索框</h2>
+    <p class="section-desc">带图标、清除按钮、快捷键提示</p>
+    <div style="max-width:400px;display:flex;flex-direction:column;gap:12px;">
+      <div class="search-input-wrap">
+        <span class="search-icon">🔍</span>
+        <input type="text" class="form-input" placeholder="搜索目的地、方案...">
+        <button class="search-clear" style="opacity:1;transform:scale(1);">✕</button>
+      </div>
+      <div class="search-input-wrap">
+        <span class="search-icon">🔍</span>
+        <input type="text" class="form-input" placeholder="快捷键搜索...">
+        <span class="search-shortcut">⌘K</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ 选择芯片 ══ -->
+  <section class="demo-section">
+    <h2>🏷 选择芯片</h2>
+    <p class="section-desc">可选、可关闭的标签芯片</p>
+    <div class="chip-group">
+      <span class="chip active">全部</span>
+      <span class="chip">国内</span>
+      <span class="chip">东南亚</span>
+      <span class="chip">欧洲</span>
+      <span class="chip">日韩</span>
+      <span class="chip">美洲</span>
+    </div>
+    <div class="chip-group" style="margin-top:12px;">
+      <span class="chip chip-accent">🏔 稻城亚丁 <button class="chip-close">✕</button></span>
+      <span class="chip chip-success">🌊 三亚 <button class="chip-close">✕</button></span>
+      <span class="chip chip-info">🏯 京都 <button class="chip-close">✕</button></span>
+      <span class="chip chip-warning">🗿 复活节岛 <button class="chip-close">✕</button></span>
+    </div>
+  </section>
+
+  <!-- ══ 步骤条 ══ -->
+  <section class="demo-section">
+    <h2>🪜 步骤条</h2>
+    <p class="section-desc">水平 + 垂直两种布局</p>
+    <div class="stepper" style="margin-bottom:32px;">
+      <div class="step completed">
+        <div class="step-circle">✓</div>
+        <span class="step-label">选择模板</span>
+      </div>
+      <div class="step active">
+        <div class="step-circle">2</div>
+        <span class="step-label">填写信息</span>
+      </div>
+      <div class="step">
+        <div class="step-circle">3</div>
+        <span class="step-label">预览确认</span>
+      </div>
+      <div class="step">
+        <div class="step-circle">4</div>
+        <span class="step-label">发布方案</span>
+      </div>
+    </div>
+    <div class="stepper-vertical" style="max-width:320px;">
+      <div class="step completed">
+        <div class="step-circle">✓</div>
+        <div class="step-content"><h4>选择目的地</h4><p>已选择 3 个目的地</p></div>
+      </div>
+      <div class="step active">
+        <div class="step-circle">2</div>
+        <div class="step-content"><h4>安排行程</h4><p>正在配置每日行程</p></div>
+      </div>
+      <div class="step">
+        <div class="step-circle">3</div>
+        <div class="step-content"><h4>确认预算</h4><p>预估总费用</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ 信息提示框 ══ -->
+  <section class="demo-section">
+    <h2>💬 信息提示框</h2>
+    <p class="section-desc">四种语义化提示</p>
+    <div style="display:flex;flex-direction:column;gap:10px;max-width:500px;">
+      <div class="alert alert-info"><span class="alert-icon">ℹ️</span> 系统将于今晚 22:00 进行例行维护，预计 30 分钟。</div>
+      <div class="alert alert-success"><span class="alert-icon">✅</span> 方案「日本深度游」已成功发布！</div>
+      <div class="alert alert-warning"><span class="alert-icon">⚠️</span> 您的会员将在 7 天后到期，请及时续费。</div>
+      <div class="alert alert-error"><span class="alert-icon">❌</span> 删除失败：该目的地下有 12 条关联方案。</div>
+    </div>
+  </section>
+
+  <!-- ══ 输入组 ══ -->
+  <section class="demo-section">
+    <h2>🧩 输入组</h2>
+    <p class="section-desc">前缀/后缀组合输入</p>
+    <div style="max-width:400px;display:flex;flex-direction:column;gap:12px;">
+      <div class="input-group">
+        <span class="input-addon">¥</span>
+        <input type="number" class="form-input" placeholder="预算金额" style="border-radius:0 var(--radius-md) var(--radius-md) 0;">
+      </div>
+      <div class="input-group">
+        <input type="text" class="form-input" placeholder="搜索..." style="border-radius:var(--radius-md) 0 0 var(--radius-md);">
+        <button class="btn-primary" style="border-radius:0 var(--radius-md) var(--radius-md) 0;">搜索</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ 统计卡片增强 ══ -->
+  <section class="demo-section">
+    <h2>📊 统计卡片</h2>
+    <p class="section-desc">带顶部渐变条 + hover 抬升</p>
+    <div class="stat-grid">
+      <div class="stat-card stat-accent">
+        <div class="stat-icon">🗺️</div>
+        <div class="stat-value">1,284</div>
+        <div class="stat-label">目的地总数</div>
+        <div class="stat-change up">↑ 12.5%</div>
+      </div>
+      <div class="stat-card stat-success">
+        <div class="stat-icon">📋</div>
+        <div class="stat-value">3,847</div>
+        <div class="stat-label">旅游方案</div>
+        <div class="stat-change up">↑ 24.3%</div>
+      </div>
+      <div class="stat-card stat-warning">
+        <div class="stat-icon">👥</div>
+        <div class="stat-value">9,562</div>
+        <div class="stat-label">注册用户</div>
+        <div class="stat-change up">↑ 18.1%</div>
+      </div>
+      <div class="stat-card stat-cosmic">
+        <div class="stat-icon">📈</div>
+        <div class="stat-value">94.7%</div>
+        <div class="stat-label">好评率</div>
+        <div class="stat-change down">↓ 2.1%</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ 动效展示 ══ -->
+  <section class="demo-section">
+    <h2>🎬 动效系统</h2>
+    <p class="section-desc">Shimmer 扫光 · Glow 脉冲 · Card Lift · Bounce/Pop/Rotate In · Shake · Float</p>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:16px;">
+      <div class="card shimmer" style="padding:24px;text-align:center;">
+        <div style="font-size:28px;margin-bottom:8px;">✨</div>
+        <div style="font-size:14px;font-weight:600;">Shimmer 扫光</div>
+        <div style="font-size:11px;color:var(--text-muted);margin-top:4px;">持续流光扫过</div>
+      </div>
+      <div class="card glow-pulse" style="padding:24px;text-align:center;">
+        <div style="font-size:28px;margin-bottom:8px;">💫</div>
+        <div style="font-size:14px;font-weight:600;">Glow Pulse</div>
+        <div style="font-size:11px;color:var(--text-muted);margin-top:4px;">光晕呼吸</div>
+      </div>
+      <div class="card card-lift" style="padding:24px;text-align:center;">
+        <div style="font-size:28px;margin-bottom:8px;">🚀</div>
+        <div style="font-size:14px;font-weight:600;">Card Lift</div>
+        <div style="font-size:11px;color:var(--text-muted);margin-top:4px;">hover 悬浮抬升</div>
+      </div>
+      <div class="card float" style="padding:24px;text-align:center;">
+        <div style="font-size:28px;margin-bottom:8px;">🎈</div>
+        <div style="font-size:14px;font-weight:600;">Float</div>
+        <div style="font-size:11px;color:var(--text-muted);margin-top:4px;">微微上下浮动</div>
+      </div>
+      <div class="card" style="padding:24px;text-align:center;" id="shake-demo" onclick="this.classList.add('shake');setTimeout(()=>this.classList.remove('shake'),400)">
+        <div style="font-size:28px;margin-bottom:8px;">📳</div>
+        <div style="font-size:14px;font-weight:600;">Shake</div>
+        <div style="font-size:11px;color:var(--text-muted);margin-top:4px;">点击触发摇晃</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ Footer ══ -->
+  <footer class="demo-footer">
+    <p style="font-size:18px;margin-bottom:8px;">🌌</p>
+    <p>Nebula Coral Design System v1.0</p>
+    <p style="margin-top:4px;">旅途时光 · 旅游方案定制平台</p>
+  </footer>
+
+</div>
+
+<!-- Toast 容器 -->
+<div class="toast-container" id="toast-container"></div>
+
+<script>
+function switchTheme(theme) {
+  document.documentElement.setAttribute('data-theme', theme);
+  document.getElementById('theme-dark').classList.toggle('active', theme === 'dark');
+  document.getElementById('theme-light').classList.toggle('active', theme === 'light');
+}
+
+function demoToast(type, msg) {
+  const icons = { success: '✅', error: '❌', warning: '⚠️', info: 'ℹ️' };
+  const container = document.getElementById('toast-container');
+  const el = document.createElement('div');
+  el.className = 'toast toast-' + type;
+  el.innerHTML = '<span>' + (icons[type] || '') + '</span> ' + msg;
+  container.appendChild(el);
+  setTimeout(() => { el.style.opacity = '0'; el.style.transform = 'translateX(100%)';
+    setTimeout(() => el.remove(), 400); }, 2500);
+}
+</script>
+
+</body>
+</html>

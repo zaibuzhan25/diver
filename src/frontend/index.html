@@ -1,0 +1,2060 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>旅游方案管理系统</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:'PingFang SC','Microsoft YaHei',sans-serif;font-size:14px;color:#2c3e50;display:flex;height:100vh;overflow:hidden}
+
+  /* 侧边栏 — 深色模式 */
+  [data-theme="dark"] .sidebar{width:220px;background:#1a2332;color:#fff;flex-shrink:0;display:flex;flex-direction:column;overflow:hidden}
+  [data-theme="light"] .sidebar{width:220px;background:#fff;color:#1f2937;flex-shrink:0;display:flex;flex-direction:column;overflow:hidden;border-right:1px solid #e5e7eb}
+
+  [data-theme="dark"] .sidebar-logo{padding:20px 20px 16px;border-bottom:1px solid #2d3f55}
+  [data-theme="light"] .sidebar-logo{padding:20px 20px 16px;border-bottom:1px solid #e5e7eb}
+  .sidebar-logo .logo-icon{font-size:24px;margin-bottom:6px}
+
+  [data-theme="dark"] .sidebar-logo h1{font-size:15px;font-weight:500;color:#fff}
+  [data-theme="light"] .sidebar-logo h1{font-size:15px;font-weight:500;color:#111827}
+  [data-theme="dark"] .sidebar-logo p{font-size:12px;color:#7f8fa4;margin-top:2px}
+  [data-theme="light"] .sidebar-logo p{font-size:12px;color:#6b7280;margin-top:2px}
+  .nav-section{padding:12px 0}
+
+  [data-theme="dark"] .nav-section-title{font-size:11px;color:#4a6080;padding:8px 20px 4px;text-transform:uppercase;letter-spacing:0.5px}
+  [data-theme="light"] .nav-section-title{font-size:11px;color:#9ca3af;padding:8px 20px 4px;text-transform:uppercase;letter-spacing:0.5px}
+
+  [data-theme="dark"] .nav-item{display:flex;align-items:center;gap:10px;padding:10px 20px;cursor:pointer;color:#a8bbd0;font-size:13px;transition:all .15s}
+  [data-theme="light"] .nav-item{display:flex;align-items:center;gap:10px;padding:10px 20px;cursor:pointer;color:#4b5563;font-size:13px;transition:all .15s}
+  [data-theme="dark"] .nav-item:hover{background:#243347;color:#fff}
+  [data-theme="light"] .nav-item:hover{background:rgba(0,0,0,0.04);color:#2563eb}
+  .nav-item.active{background:#2563eb;color:#fff}
+  .nav-item .nav-icon{width:18px;text-align:center;font-size:15px}
+
+  [data-theme="dark"] .sidebar-footer{margin-top:auto;padding:16px 20px;border-top:1px solid #2d3f55;font-size:12px;color:#4a6080}
+  [data-theme="light"] .sidebar-footer{margin-top:auto;padding:16px 20px;border-top:1px solid #e5e7eb;font-size:12px;color:#9ca3af}
+
+  /* 主内容区 */
+  .main{flex:1;display:flex;flex-direction:column;overflow:hidden}
+  /* 顶栏 */
+  [data-theme="dark"] .topbar{background:rgba(13,17,23,0.75);border-bottom:1px solid rgba(255,255,255,0.08);padding:0 24px;height:56px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;backdrop-filter:blur(10px)}
+  [data-theme="light"] .topbar{background:rgba(255,255,255,0.9);border-bottom:1px solid #e5e7eb;padding:0 24px;height:56px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;backdrop-filter:blur(12px)}
+  .topbar-title{font-size:16px;font-weight:500}
+  .topbar-actions{display:flex;gap:10px;align-items:center}
+
+  /* 主题切换 */
+  [data-theme="dark"] .theme-toggle{display:flex;align-items:center;gap:3px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);border-radius:16px;padding:3px;cursor:pointer;transition:all .3s;backdrop-filter:blur(4px)}
+  [data-theme="light"] .theme-toggle{display:flex;align-items:center;gap:3px;background:rgba(0,0,0,0.04);border:1px solid rgba(0,0,0,0.08);border-radius:16px;padding:3px;cursor:pointer;transition:all .3s}
+  .theme-toggle:hover{border-color:#2563eb}
+  .theme-opt{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;transition:all .25s;color:#8492a6;border:none;cursor:pointer}
+  .theme-opt.active{background:#2563eb;color:#fff}
+  .theme-opt:not(.active):hover{background:#f3f4f6}
+  .content{flex:1;overflow-y:auto;padding:24px}
+
+  /* 页面区块 */
+  .page{display:none}
+  .page.active{display:block}
+
+  /* 统计卡片 */
+  .stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:24px}
+  [data-theme="dark"] .stat-card{background:rgba(255,255,255,0.04);border-radius:12px;padding:20px;border:1px solid rgba(255,255,255,0.08);backdrop-filter:blur(20px) saturate(180%)}
+  [data-theme="light"] .stat-card{background:#fff;border-radius:12px;padding:20px;border:1px solid #e5e7eb;box-shadow:0 1px 3px rgba(0,0,0,0.06)}
+
+  [data-theme="dark"] .stat-card .label{font-size:12px;color:rgba(255,255,255,0.5);margin-bottom:8px}
+  [data-theme="light"] .stat-card .label{font-size:12px;color:#6b7280;margin-bottom:8px}
+
+  [data-theme="dark"] .stat-card .value{font-size:28px;font-weight:500;color:#fff}
+  [data-theme="light"] .stat-card .value{font-size:28px;font-weight:500;color:#111827}
+
+  [data-theme="dark"] .stat-card .sub{font-size:12px;color:rgba(255,255,255,0.4);margin-top:4px}
+  [data-theme="light"] .stat-card .sub{font-size:12px;color:#9ca3af;margin-top:4px}
+  .stat-card.blue .value{color:#2563eb}
+  .stat-card.green .value{color:#16a34a}
+  .stat-card.orange .value{color:#ea580c}
+  .stat-card.purple .value{color:#7c3aed}
+
+  /* 表格 */
+  .card{background:rgba(255,255,255,0.03);border-radius:10px;border:1px solid rgba(255,255,255,0.06);overflow:hidden;backdrop-filter:blur(20px) saturate(180%)}
+  .card-header{padding:16px 20px;display:flex;align-items:center;justify-content:space-between;border-bottom:0.5px solid #e8eaf0}
+  .card-header h3{font-size:14px;font-weight:500}
+  table{width:100%;border-collapse:collapse}
+  th{font-size:12px;color:rgba(255,255,255,0.4);padding:10px 16px;text-align:left;background:rgba(255,255,255,0.03);border-bottom:1px solid rgba(255,255,255,0.08);font-weight:400}
+  td{padding:12px 16px;border-bottom:0.5px solid #f0f1f5;font-size:13px;vertical-align:middle}
+  tr:last-child td{border-bottom:none}
+  tr:hover td{background:rgba(255,255,255,0.05)}
+
+  /* 状态标签*/
+  .badge{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:4px;font-size:12px}
+  .badge.已取消{background:rgba(220,38,38,0.15);color:#fca5a5}
+  .badge.待审核{background:rgba(245,158,11,0.15);color:#fcd34d}
+  .badge.已驳回{background:rgba(220,38,38,0.15);color:#fca5a5}
+  .badge.已确认{background:rgba(59,130,246,0.15);color:#93c5fd}
+  .badge.进行中{background:rgba(16,185,129,0.15);color:#6ee7b7}
+  .badge.已完成{background:rgba(99,102,241,0.15);color:#a5b4fc}
+
+  /* 按钮 */
+  .btn{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:6px;font-size:13px;cursor:pointer;border:none;font-family:inherit;transition:all .15s}
+  .btn-primary{background:#2563eb!important;color:#fff!important;border:none!important}
+  .btn-primary:hover{background:#1d4ed8!important}
+  .btn-outline{background:transparent!important;color:rgba(255,255,255,0.85)!important;border:1.5px solid rgba(255,255,255,0.3)!important}
+  .btn-outline:hover{background:rgba(255,255,255,0.06)!important;color:#60a5fa!important;border-color:rgba(96,165,250,0.6)!important}
+  .btn-danger{background:rgba(255,255,255,0.08);color:#dc2626;border:1px solid rgba(252,165,165,0.5)}
+  .btn-danger:hover{background:rgba(220,38,38,0.25)}
+  .btn-sm{padding:4px 10px;font-size:12px}
+  .btn-icon{width:30px;height:30px;padding:0;justify-content:center}
+  .btn-icon:hover{background:rgba(255,255,255,0.1);color:#60a5fa}
+
+  /* 搜索框*/
+  .search-bar{display:flex;gap:10px;margin-bottom:16px;align-items:center}
+  .search-bar input,.search-bar select{padding:7px 12px;border:0.5px solid #d1d5db;border-radius:6px;font-size:13px;font-family:inherit;outline:none;color:#374151}
+  .search-bar input:focus,.search-bar select:focus{border-color:#2563eb}
+  .search-bar input{flex:1;min-width:0}
+
+  /* 模态框 */
+  .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:1000;align-items:center;justify-content:center}
+  .modal-overlay.show{display:flex}
+  .modal{background:rgba(20,25,35,0.96)!important;backdrop-filter:blur(24px) saturate(180%);-webkit-backdrop-filter:blur(24px) saturate(180%);border-radius:12px;width:560px;max-width:95vw;max-height:88vh;overflow-y:auto;box-shadow:0 8px 40px rgba(0,0,0,.5);border:1px solid rgba(255,255,255,0.1)!important;color:rgba(255,255,255,0.9)!important}
+  .modal-header{padding:20px 24px 16px;border-bottom:1px solid rgba(255,255,255,0.08);display:flex;justify-content:space-between;align-items:center}
+  .modal-header h3{font-size:15px;font-weight:500;color:rgba(255,255,255,0.95)!important}
+  .modal-body{padding:20px 24px}
+  .modal-footer{padding:16px 24px;border-top:1px solid rgba(255,255,255,0.08);display:flex;align-items:center;justify-content:flex-end;gap:10px}
+  .form-error-msg{color:#fca5a5;font-size:12px;margin-right:auto;max-width:280px;line-height:1.4}
+  .close-btn{cursor:pointer;font-size:18px;color:rgba(255,255,255,0.4);line-height:1;padding:2px}
+  .close-btn:hover{color:rgba(255,255,255,0.8)}
+  .detail-item{display:flex;flex-direction:column;gap:3px;padding:10px 14px;background:rgba(255,255,255,0.03);border-radius:8px}
+  .detail-label{font-size:11px;color:#8492a6;text-transform:uppercase;letter-spacing:0.5px;font-weight:500}
+  .detail-value{font-size:13px;color:#1a2332;font-weight:500}
+
+  /* 表单 */
+  .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  .form-grid.single{grid-template-columns:1fr}
+  .form-group{display:flex;flex-direction:column;gap:5px}
+  .form-group label{font-size:12px;color:rgba(255,255,255,0.5);font-weight:400}
+  .form-group input,.form-group select,.form-group textarea{padding:8px 10px;border:1px solid rgba(255,255,255,0.15);border-radius:6px;font-size:13px;font-family:inherit;outline:none;color:rgba(255,255,255,0.9)!important;background:rgba(255,255,255,0.06)!important}
+  .form-group input:focus,.form-group select:focus,.form-group textarea:focus{border-color:#2563eb}
+  .form-group textarea{resize:vertical;min-height:70px}
+  .form-divider{grid-column:1/-1;border:none;border-top:0.5px solid #e8eaf0;margin:4px 0}
+  .form-section-title{grid-column:1/-1;font-size:13px;font-weight:500;color:#374151;padding-bottom:2px}
+
+  /* 行程编辑器*/
+  .itinerary-editor{border:0.5px solid #e8eaf0;border-radius:8px;overflow:hidden}
+  .itinerary-day{border-bottom:0.5px solid #e8eaf0}
+  .itinerary-day:last-child{border-bottom:none}
+  .day-header{background:rgba(255,255,255,0.04);padding:10px 14px;font-size:13px;font-weight:500;color:#374151;display:flex;justify-content:space-between;align-items:center}
+  .day-item{padding:10px 14px;border-top:0.5px solid #f0f1f5;font-size:12px;color:#6b7280;display:flex;gap:10px}
+  .day-item-info{flex:1}
+  .add-day-btn{width:100%;padding:10px;border:none;background:rgba(255,255,255,0.05);color:#2563eb;cursor:pointer;font-size:13px;font-family:inherit;border-top:0.5px solid #e8eaf0}
+  .add-day-btn:hover{background:rgba(96,165,250,0.1)}
+
+  /* 空状态*/
+  .empty-state{text-align:center;padding:48px 20px;color:#8492a6}
+  .empty-state .empty-icon{font-size:40px;margin-bottom:12px}
+  .empty-state p{font-size:14px}
+
+  /* 响应式*/
+  @media(max-width:900px){.stats-grid{grid-template-columns:repeat(2,1fr)}.sidebar{width:64px}.nav-item span,.nav-section-title,.sidebar-logo p,.sidebar-logo h1{display:none}.sidebar-logo .logo-icon{text-align:center}}
+  /* 图表容器 */
+  .chart-wrap{position:relative;width:100%;height:220px}
+  .chart-wrap canvas{width:100%!important;height:100%!important}
+  /* 打印样式 */
+  @media print {
+    body * { visibility: hidden }
+    .print-area, .print-area * { visibility: visible }
+    .print-area { position: absolute; left: 0; top: 0; width: 100%!important; box-shadow: none!important; border: none!important }
+    .no-print { display: none!important }
+  }
+  /* 强制所有可交互元素可点击（防止设计系统 CSS 意外阻断）*/
+  button, .btn, [onclick], a, input, select, textarea, [role="button"] {
+    pointer-events: auto !important;
+  }
+</style>
+<!-- Chart.js：国内 CDN + 失败静默处理，不影响页面其余功能 -->
+<script>
+(function(){
+  var cdns = [
+    'https://cdn.bootcdn.net/ajax/libs/Chart.js/4.4.1/chart.umd.min.js',
+    'https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js'
+  ];
+  var ok = false;
+  function load(i){
+    if(ok||i>=cdns.length) return;
+    var s=document.createElement('script');
+    s.src=cdns[i];
+    s.onload=function(){ok=true;console.log('[Chart.js] loaded from CDN '+(i+1))};
+    s.onerror=function(){console.warn('[Chart.js] CDN '+(i+1)+' failed, trying next...'); load(i+1)};
+    document.head.appendChild(s);
+  }
+  load(0);
+})();
+</script>
+<script>
+// 确保 Chart 未加载时页面仍能初始化，图表在 Chart 就绪后再渲染
+window._chartReady = new Promise(function(res){
+  (function check(){
+    if(typeof Chart!=='undefined'){res(Chart);return}
+    setTimeout(check,100);
+  })();
+});
+</script>
+<link rel="stylesheet" href="/src/frontend/toast.css">
+<link rel="stylesheet" href="/src/frontend/theme.css">
+<link rel="stylesheet" href="/src/frontend/modern-design.css">
+<link rel="stylesheet" href="/src/frontend/nebula-effects.css">
+<link rel="stylesheet" href="/src/frontend/index-fix.css">
+
+<!-- ════ 核弹级深色样式：覆盖一切外部CSS变量和默认值 ════ -->
+<style id="nuclear-dark">
+/* ═══════ 深色模式：根元素强制深色背景（最顶层防白底） ═══════ */
+html { background: #080c14 !important; }
+body { background: transparent !important; }
+
+/* 强制模态框深色 */
+.modal-overlay .modal {
+  background: rgba(18,22,30,0.97) !important;
+  backdrop-filter: blur(28px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(28px) saturate(180%) !important;
+  border: 1px solid rgba(255,255,255,0.08) !important;
+  box-shadow: 0 16px 60px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.04) !important;
+  border-radius: 14px !important;
+  color: rgba(255,255,255,0.92) !important;
+}
+
+/* 模态框内部所有元素强制浅色 */
+.modal-overlay .modal * {
+  color: rgba(255,255,255,0.85) !important;
+}
+
+.modal-overlay .modal label,
+.modal-overlay .modal .form-group > label,
+.modal-overlay .modal h3,
+.modal-overlay .modal h4 {
+  color: rgba(255,255,255,0.55) !important;
+  font-weight: 500 !important;
+}
+
+.modal-overlay .modal h3 {
+  color: rgba(255,255,255,0.95) !important;
+  font-size: 15px !important;
+  font-weight: 600 !important;
+}
+
+/* 表单输入框 — 深色毛玻璃 */
+.modal-overlay .modal input,
+.modal-overlay .modal select,
+.modal-overlay .modal textarea {
+  background: rgba(255,255,255,0.06) !important;
+  border: 1px solid rgba(255,255,255,0.12) !important;
+  border-radius: 8px !important;
+  color: rgba(255,255,255,0.9) !important;
+  padding: 10px 14px !important;
+  font-size: 13px !important;
+  outline: none !important;
+  transition: border-color 0.2s !important;
+}
+
+.modal-overlay .modal input:focus,
+.modal-overlay .modal select:focus,
+.modal-overlay .modal textarea:focus {
+  border-color: #60a5fa !important;
+  box-shadow: 0 0 0 3px rgba(96,165,250,0.12) !important;
+  background: rgba(255,255,255,0.09) !important;
+}
+
+.modal-overlay .modal input::placeholder,
+.modal-overlay .modal textarea::placeholder {
+  color: rgba(255,255,255,0.3) !important;
+}
+
+/* 模态框分隔线 */
+.modal-overlay .modal-header {
+  border-bottom: 1px solid rgba(255,255,255,0.07) !important;
+}
+.modal-overlay .modal-footer {
+  border-top: 1px solid rgba(255,255,255,0.07) !important;
+}
+
+/* 关闭按钮 */
+.modal-overlay .close-btn {
+  color: rgba(255,255,255,0.35) !important;
+  font-size: 18px !important;
+}
+.modal-overlay .close-btn:hover {
+  color: rgba(255,255,255,0.75) !important;
+}
+
+/* ====== 按钮规范 ====== */
+
+/* 保存按钮 — 蓝底白字 */
+.modal-overlay .btn.btn-primary,
+.btn.btn-primary {
+  background: linear-gradient(135deg,#2563eb,#1d4ed8) !important;
+  color: #fff !important;
+  border: none !important;
+  border-radius: 7px !important;
+  padding: 8px 20px !important;
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  letter-spacing: 0.3px !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+  box-shadow: 0 2px 8px rgba(37,99,235,0.35) !important;
+}
+.modal-overlay .btn.btn-primary:hover,
+.btn.btn-primary:hover {
+  background: linear-gradient(135deg,#1d4ed8,#1e40af) !important;
+  transform: translateY(-1px) !important;
+  box-shadow: 0 4px 14px rgba(37,99,235,0.45) !important;
+}
+
+/* 取消按钮 — 透明+描边 + hover变蓝 */
+.modal-overlay .btn.btn-outline,
+.btn.btn-outline {
+  background: transparent !important;
+  color: rgba(255,255,255,0.85) !important;
+  border: 1.5px solid rgba(255,255,255,0.28) !important;
+  border-radius: 7px !important;
+  padding: 8px 20px !important;
+  font-size: 13px !important;
+  font-weight: 400 !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+}
+.modal-overlay .btn.btn-outline:hover,
+.btn.btn-outline:hover {
+  color: #60a5fa !important;
+  border-color: #60a5fa !important;
+  background: rgba(96,165,250,0.08) !important;
+}
+
+/* 错误信息 */
+.form-error-msg {
+  color: #fca5a5 !important;
+}
+
+
+/* ====== 目的地卡片优化 ====== */
+.dest-card:hover {
+  transform: translateY(-4px) !important;
+  box-shadow: 0 12px 36px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.08) !important;
+  border-color: rgba(255,255,255,0.14) !important;
+}
+
+/* 目的地卡片文字（深色模式默认） */
+.dest-name {
+  font-size: 15px;
+  font-weight: 600;
+  margin-bottom: 5px;
+  color: rgba(255,255,255,0.92);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.dest-subtitle { font-size: 12px; color: rgba(255,255,255,0.35); }
+.dest-desc {
+  font-size: 12px;
+  color: rgba(255,255,255,0.45);
+  margin-top: 14px;
+  line-height: 1.7;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.dest-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 18px;
+  padding-top: 14px;
+  border-top: 1px solid rgba(255,255,255,0.06);
+}
+.empty-state-text { text-align: center; padding: 24px 0; font-size: 13px; color: rgba(255,255,255,0.35); }
+
+
+/* ====== Select 下拉框深度深色化 ====== */
+
+/* 模态框内的 select 整体 */
+.modal-overlay .modal select,
+.modal select,
+select {
+  background: rgba(255,255,255,0.06) !important;
+  border: 1px solid rgba(255,255,255,0.12) !important;
+  border-radius: 8px !important;
+  color: rgba(255,255,255,0.9) !important;
+  padding: 10px 14px !important;
+  font-size: 13px !important;
+  outline: none !important;
+  appearance: none !important;
+  -webkit-appearance: none !important;
+  -moz-appearance: none !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+  background-image:
+    linear-gradient(45deg, transparent 50%, rgba(255,255,255,0.4) 50%),
+    linear-gradient(135deg, rgba(255,255,255,0.4) 50%, transparent 50%) !important;
+  background-position:
+    calc(100% - 16px) calc(1em + 2px),
+    calc(100% - 12px) calc(1em + 2px) !important;
+  background-size: 4px 4px, 4px 4px !important;
+  background-repeat: no-repeat !important;
+}
+
+.modal-overlay .modal select:focus,
+select:focus {
+  border-color: #60a5fa !important;
+  box-shadow: 0 0 0 3px rgba(96,165,250,0.12) !important;
+  background-color: rgba(255,255,255,0.09) !important;
+}
+
+/* select option 深色化 */
+.modal-overlay .modal select option,
+select option,
+option {
+  background: #1e2432 !important;
+  color: rgba(255,255,255,0.9) !important;
+  padding: 10px 14px !important;
+  font-size: 13px !important;
+}
+
+.modal-overlay .modal select option:checked,
+select option:checked,
+option:checked {
+  background: #2563eb !important;
+  color: #fff !important;
+}
+
+.modal-overlay .modal select option:hover,
+select option:hover,
+option:hover {
+  background: rgba(37,99,235,0.25) !important;
+}
+
+
+
+/* ====== 表格宽松化（全局） ====== */
+
+/* 公告/方案等列表页的表格 */
+.card table {
+  width: 100% !important;
+  border-collapse: separate !important;
+  border-spacing: 0 !important;
+}
+
+/* 表头更宽松 */
+.card thead th,
+thead th {
+  padding: 16px 20px !important;
+  font-size: 12px !important;
+  font-weight: 500 !important;
+  letter-spacing: 0.5px !important;
+}
+
+/* 数据行更宽松 */
+.card tbody td,
+tbody td {
+  padding: 18px 20px !important;
+  font-size: 13px !important;
+  line-height: 1.6 !important;
+  vertical-align: middle !important;
+}
+
+/* 行之间加间距 */
+.card tbody tr + tr,
+tbody tr + tr {
+  border-top: 1px solid rgba(255,255,255,0.06) !important;
+}
+
+/* hover 效果 */
+.card tbody tr:hover,
+tbody tr:hover {
+  background: rgba(255,255,255,0.04) !important;
+  transition: background 0.2s ease !important;
+}
+
+/* 搜索栏区域加底边距 */
+.search-bar {
+  margin-bottom: 24px !important;
+}
+
+/* 卡片内容区加大内边距 */
+.content > .card {
+  padding: 4px !important; /* 外层微调 */
+}
+.content > .card > .card-header {
+  padding: 18px 24px !important;
+}
+/* table 保持默认 table 布局，不覆盖为 block */
+
+/* 空状态加大内边距 */
+td[style*="text-align:center"] {
+  padding: 60px 24px !important;
+}
+
+
+
+/* ====== 状态 Badge 修复 ====== */
+.badge {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 4px;
+  padding: 4px 12px !important;   /* 加宽内边距 */
+  border-radius: 6px !important;
+  font-size: 12px !important;
+  font-weight: 500 !important;
+  white-space: nowrap !important;  /* 禁止换行 */
+  min-width: fit-content !important;
+  flex-shrink: 0 !important;
+  line-height: 1.4 !important;
+}
+
+/* 表格内的按钮也防止挤压 */
+.card tbody td .btn,
+tbody td .btn {
+  white-space: nowrap !important;
+  flex-shrink: 0 !important;
+}
+
+
+
+/* ====== 表格操作列按钮横排 ====== */
+tbody td > .btn + .btn {
+  margin-left: 6px !important;
+}
+
+/* 操作列 td 内部用 flex 横排 */
+tbody td:has(> .btn) {
+  white-space: nowrap !important;
+}
+
+/* ═════════ 深色模式：内容区强制深色背景（防止白底残留） ═════════ */
+.content,
+.page.active,
+.page { background: transparent !important; }
+
+.card {
+  background: rgba(255,255,255,0.03) !important;
+  border-color: rgba(255,255,255,0.08) !important;
+}
+
+.stat-card {
+  background: rgba(255,255,255,0.04) !important;
+  border-color: rgba(255,255,255,0.08) !important;
+}
+
+/* Chart canvas 容器深色化 */
+.card canvas,
+.stat-card canvas,
+.chart-container,
+.chart-wrapper { background: transparent !important; }
+
+</style>
+
+<!-- ═════ Light 模式覆盖：修复内联深色样式在浅色主题下的文字颜色 ═════ -->
+<style id="light-mode-fix">
+[data-theme="light"] th {
+  color: #6b7280 !important;
+  background: transparent !important;
+  border-bottom-color: #e5e7eb !important;
+}
+[data-theme="light"] td {
+  color: #374151 !important;
+  border-bottom-color: #f0f0f0 !important;
+}
+[data-theme="light"] tr:hover td {
+  background: rgba(0,0,0,0.02) !important;
+}
+[data-theme="light"] .card-header h3 { color: #1f2937 !important; }
+[data-theme="light"] .card-header { border-bottom-color: #e5e7eb !important; }
+
+/* Light 按钮 */
+[data-theme="light"] .btn-outline {
+  color: #374151 !important;
+  border: 1.5px solid #d1d5db !important;
+}
+[data-theme="light"] .btn-outline:hover {
+  background: rgba(59,130,246,0.06) !important;
+  color: #2563eb !important;
+  border-color: #93c5fd !important;
+}
+[data-theme="light"] .btn-icon:hover {
+  background: rgba(0,0,0,0.06) !important;
+  color: #2563eb !important;
+}
+
+/* Light 表单 */
+[data-theme="light"] .form-group label { color: #6b7280 !important; }
+[data-theme="light"] .form-group input,
+[data-theme="light"] .form-group select,
+[data-theme="light"] .form-group textarea {
+  color: #1f2937 !important;
+  background: #fff !important;
+  border-color: #d1d5db !important;
+}
+[data-theme="light"] .form-section-title { color: #374151 !important; }
+
+/* Light 行程编辑器 */
+[data-theme="light"] .day-header {
+  color: #374151 !important;
+  background: #f9fafb !important;
+  border-bottom-color: #e5e7eb !important;
+}
+[data-theme="light"] .day-item { color: #4b5563 !important; border-top-color: #e5e7eb !important; }
+[data-theme="light"] .itinerary-editor,
+[data-theme="light"] .itinerary-day { border-color: #e5e7eb !important; }
+[data-theme="light"] .add-day-btn { color: #2563eb !important; border-top-color: #e5e7eb !important; }
+[data-theme="light"] .add-day-btn:hover { background: rgba(37,99,235,0.06) !important; }
+
+/* Light 卡片背景（去掉毛玻璃透明） */
+[data-theme="light"] .card {
+  background: #fff !important;
+  border-color: #e5e7eb !important;
+}
+[data-theme="light"] .detail-item {
+  background: #f9fafb !important;
+}
+[data-theme="light"] .detail-value { color: #1f2937 !important; }
+[data-theme="light"] .detail-label { color: #6b7280 !important; }
+
+/* Light 空状态 */
+[data-theme="light"] .empty-state { color: #9ca3af !important; }
+
+/* Light 分割线 */
+[data-theme="light"] .form-divider,
+[data-theme="light"] .modal-footer,
+[data-theme="light"] .modal-header { border-color: #e5e7eb !important; }
+
+/* ═════════════ Light 模式：模态框 ═════════════ */
+[data-theme="light"] .modal-overlay .modal {
+  background: #fff !important;
+  color: #1f2937 !important;
+  border: 1px solid #e5e7eb !important;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.15) !important;
+}
+[data-theme="light"] .modal-header {
+  border-bottom-color: #e5e7eb !important;
+}
+[data-theme="light"] .modal-header h3 {
+  color: #1f2937 !important;
+}
+[data-theme="light"] .modal-footer {
+  border-top-color: #e5e7eb !important;
+}
+[data-theme="light"] .close-btn {
+  color: #6b7280 !important;
+}
+[data-theme="light"] .close-btn:hover {
+  color: #1f2937 !important;
+}
+[data-theme="light"] .form-group label {
+  color: #374151 !important;
+}
+[data-theme="light"] .form-group input,
+[data-theme="light"] .form-group select,
+[data-theme="light"] .form-group textarea {
+  background: #fff !important;
+  color: #1f2937 !important;
+  border-color: #d1d5db !important;
+}
+[data-theme="light"] .form-group input:focus,
+[data-theme="light"] .form-group select:focus,
+[data-theme="light"] .form-group textarea:focus {
+  border-color: #2563eb !important;
+  box-shadow: 0 0 0 3px rgba(37,99,235,0.1) !important;
+}
+[data-theme="light"] .form-error-msg {
+  color: #dc2626 !important;
+}
+
+/* ═════════════ Light 模式：侧边栏 ═════════════ */
+[data-theme="light"] .sidebar {
+  background: #fff !important;
+  color: #1f2937 !important;
+}
+[data-theme="light"] .sidebar-logo h1 { color: #111827 !important; }
+[data-theme="light"] .sidebar-logo p { color: #9ca3af !important; }
+[data-theme="light"] .nav-section-title { color: #9ca3af !important; }
+[data-theme="light"] .nav-item { color: #4b5563 !important; }
+[data-theme="light"] .nav-item:hover { color: #2563eb !important; background: rgba(0,0,0,0.04) !important; }
+[data-theme="light"] .sidebar-footer { color: #9ca3af !important; border-top-color: #e5e7eb !important; }
+
+/* ═════════════ Light 模式：顶栏 ═════════════ */
+[data-theme="light"] .topbar {
+  background: rgba(255,255,255,0.92) !important;
+  border-bottom-color: #e5e7eb !important;
+}
+[data-theme="light"] .topbar * { color: #374151 !important; }
+[data-theme="light"] .topbar .user-info span { color: #6b7280 !important; }
+[data-theme="light"] .topbar-title { color: #111827 !important; }
+
+/* ═════════════ Light 模式：统计卡片 ═════════════ */
+[data-theme="light"] .stat-card { background: #fff !important; border-color: #e5e7eb !important; box-shadow: 0 1px 3px rgba(0,0,0,0.06) !important; }
+[data-theme="light"] .stat-card .label { color: #6b7280 !important; }
+[data-theme="light"] .stat-card .value { color: #111827 !important; }
+[data-theme="light"] .stat-card .sub { color: #9ca3af !important; }
+
+/* ═════════════ Light 模式：全局 select/input ═════════════ */
+[data-theme="light"] select {
+  color: #1f2937 !important;
+  background: #fff !important;
+  border-color: #d1d5db !important;
+}
+[data-theme="light"] input[type="text"],
+[data-theme="light"] input[type="number"],
+[data-theme="light"] textarea {
+  color: #1f2937 !important;
+  background: #fff !important;
+  border-color: #d1d5db !important;
+}
+
+/* ═════════════ Light 模式：侧边栏暴力覆盖（最高优先级） ═════════════ */
+[data-theme="light"] .sidebar,
+[data-theme="light"] .sidebar *,
+[data-theme="light"] .sidebar-nav,
+[data-theme="light"] .sidebar-nav *,
+[data-theme="light"] .nav-section,
+[data-theme="light"] .nav-section *,
+[data-theme="light"] .nav-item,
+[data-theme="light"] .nav-item *,
+[data-theme="light"] .nav-section-title,
+[data-theme="light"] .nav-icon,
+[data-theme="light"] .sidebar-footer,
+[data-theme="light"] .sidebar-footer * { color: #374151 !important; }
+[data-theme="light"] .nav-item.active,
+[data-theme="light"] .nav-item.active * { color: #fff !important; }
+[data-theme="light"] .nav-item:hover,
+[data-theme="light"] .nav-item:hover * { color: #2563eb !important; }
+[data-theme="light"] .sidebar-logo h1 { color: #111827 !important; }
+[data-theme="light"] .sidebar-logo p { color: #9ca3af !important; }
+
+/* ═════════════ Light 模式：目的地卡片 ═════════════ */
+[data-theme="light"] .dest-name { color: #111827 !important; }
+[data-theme="light"] .dest-subtitle { color: #6b7280 !important; }
+[data-theme="light"] .dest-desc { color: #4b5563 !important; }
+[data-theme="light"] .dest-actions { border-top-color: #e5e7eb !important; }
+[data-theme="light"] .empty-state-text { color: #9ca3af !important; }
+</style>
+
+<script>
+  // 抢在 body 渲染前禁用 nuclear-dark（浅色主题下）
+  (function() {
+    var theme = localStorage.getItem('theme') || 'dark';
+    if (theme !== 'dark') {
+      var s = document.getElementById('nuclear-dark');
+      if (s) s.disabled = true;
+    }
+  })();
+</script>
+</head>
+<body>
+<canvas id="nebula-canvas" style="position:fixed;top:0;left:0;width:100%;height:100%;z-index:-1;pointer-events:none"></canvas>
+
+<!-- 主应用-->
+<div id="main-app" style="display:flex;height:100vh;overflow:hidden;position:relative;z-index:1">
+
+<!-- 侧边栏-->
+<aside class="sidebar no-print">
+  <div class="sidebar-logo">
+    <div class="logo-icon">🗺️</div>
+    <h1>旅游方案管理</h1>
+    <p>Travel Plan System</p>
+  </div>
+  <nav class="nav-section">
+    <div class="nav-section-title">主菜单</div>
+    <div class="nav-item active" onclick="navigate('dashboard')">
+      <span class="nav-icon">📊</span><span>仪表盘</span>
+    </div>
+    <div class="nav-item" onclick="navigate('plans')">
+      <span class="nav-icon">📋</span><span>旅游方案</span>
+    </div>
+    <div class="nav-item nav-admin-only" onclick="navigate('users')">
+      <span class="nav-icon">👤</span><span>用户管理</span>
+    </div>
+    <div class="nav-item nav-admin-only" onclick="navigate('destinations')">
+      <span class="nav-icon">📍</span><span>目的地</span>
+    </div>
+    <div class="nav-item" onclick="navigate('announcements')">
+      <span class="nav-icon">📢</span><span>系统公告</span>
+    </div>
+  </nav>
+  <div class="sidebar-footer">v1.1 · MySQL</div>
+</aside>
+
+<!-- 主内容-->
+<div class="main no-print">
+  <header class="topbar" style="background:rgba(255,255,255,0.85);backdrop-filter:blur(12px)">
+    <div class="topbar-title" id="page-title">仪表盘</div>
+    <div class="topbar-actions">
+
+      <!-- 主题切换按钮 -->
+      <div class="theme-toggle" id="theme-toggle-index">
+        <button class="theme-opt" onclick="setTheme('light')" title="浅色">☀️</button>
+        <button class="theme-opt active" onclick="setTheme('dark')" title="深色">🌙</button>
+        <button class="theme-opt" onclick="setTheme('system')" title="跟随系统">💻</button>
+      </div>
+      <span style="font-size:12px;color:#374151" id="current-user-display"></span>
+      <span id="server-status" style="font-size:12px;color:#8492a6">🔴 连接中..</span>
+      <button class="btn btn-outline btn-sm" onclick="doSwitchAccount()" style="margin-left:8px">切换账号</button>
+      <button class="btn btn-outline btn-sm" onclick="doLogout()" style="margin-left:8px">退出登录</button>
+    </div>
+  </header>
+  <div class="content">
+
+    <!-- 仪表盘-->
+    <div id="page-dashboard" class="page active">
+      <div class="stats-grid">
+        <div class="stat-card blue">
+          <div class="label">总用户数</div>
+          <div class="value" id="stat-users"></div>
+          <div class="sub">注册旅客</div>
+        </div>
+        <div class="stat-card green">
+          <div class="label">旅游方案总数</div>
+          <div class="value" id="stat-plans"></div>
+          <div class="sub">全部方案</div>
+        </div>
+        <div class="stat-card orange">
+          <div class="label">活跃方案</div>
+          <div class="value" id="stat-active"></div>
+          <div class="sub">已确认进行中</div>
+        </div>
+        <div class="stat-card purple">
+          <div class="label">已完成收入</div>
+          <div class="value" id="stat-revenue"></div>
+          <div class="sub">实际到账（元）</div>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px">
+        <div class="card">
+          <div class="card-header"><h3>方案状态分布</h3></div>
+          <div class="chart-wrap" style="padding:16px">
+            <canvas id="chart-status"></canvas>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header">
+            <h3>近期方案</h3>
+            <button class="btn btn-outline btn-sm" onclick="navigate('plans')">查看全部</button>
+          </div>
+          <table>
+            <thead><tr><th>方案名称</th><th>旅客</th><th>出发日期</th><th>状态</th></tr></thead>
+            <tbody id="recent-plans-tbody"><tr><td colspan="4" class="empty-state"><p>加载中..</p></td></tr></tbody>
+          </table>
+        </div>
+      </div>
+      <!-- 第二行图表-->
+      <div style="display:grid;grid-template-columns:1.5fr 1fr;gap:16px">
+        <div class="card">
+          <div class="card-header"><h3>月度方案趋势</h3></div>
+          <div class="chart-wrap" style="padding:16px">
+            <canvas id="chart-monthly"></canvas>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header"><h3>热门目的地TOP 8</h3></div>
+          <div class="chart-wrap" style="padding:16px">
+            <canvas id="chart-dest"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 旅游方案 -->
+    <div id="page-plans" class="page">
+      <div class="search-bar">
+        <input type="text" id="plan-search" placeholder="搜索方案名称..." oninput="loadPlans()">
+        <select id="plan-status-filter" onchange="loadPlans()">
+          <option value="">全部状态</option>
+          <option value="待确认">待确认</option>
+          <option value="已确认">已确认</option>
+          <option value="进行中">进行中</option>
+          <option value="已完成">已完成</option>
+          <option value="已取消">已取消</option>
+        </select>
+        <button class="btn btn-primary" onclick="openPlanModal()">+ 新建方案</button>
+      </div>
+      <div class="card">
+        <table>
+          <thead><tr><th>方案名称</th><th>旅客</th><th>出发日期</th><th>天数</th><th>人数</th><th>预算(元)</th><th>实际花费</th><th>状态</th><th>操作</th></tr></thead>
+          <tbody id="plans-tbody"><tr><td colspan="9" style="text-align:center;padding:32px;color:#8492a6">加载中..</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- 用户管理 -->
+    <div id="page-users" class="page">
+      <div class="search-bar">
+        <input type="text" id="user-search" placeholder="搜索姓名或手机号..." oninput="loadUsers()">
+        <button class="btn btn-primary" onclick="openUserModal()">+ 添加用户</button>
+      </div>
+      <div class="card">
+        <table>
+          <thead><tr><th>姓名</th><th>手机号</th><th>邮箱</th><th>年龄</th><th>性别</th><th>角色</th><th>加入时间</th><th>操作</th></tr></thead>
+          <tbody id="users-tbody"><tr><td colspan="8" style="text-align:center;padding:32px;color:#8492a6">加载中..</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- 目的地-->
+    <div id="page-destinations" class="page">
+      <div class="search-bar">
+        <input type="text" id="dest-search-admin" placeholder="搜索目的地（名称/省份/城市）.." oninput="loadDestinations()">
+        <select id="dest-category-admin" onchange="loadDestinations()">
+          <option value="">全部分类</option>
+          <option value="历史文化">历史文化</option>
+          <option value="自然风光">自然风光</option>
+          <option value="都市体验">都市体验</option>
+          <option value="休闲度假">休闲度假</option>
+          <option value="美食文化">美食文化</option>
+          <option value="民族文化">民族文化</option>
+        </select>
+        <button class="btn btn-primary" onclick="openDestModal()">+ 添加目的地</button>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:24px" id="dest-grid">
+        <div style="text-align:center;padding:32px;color:#8492a6">加载中..</div>
+      </div>
+    </div>
+
+    <!-- 系统公告 -->
+    <div id="page-announcements" class="page">
+      <div class="search-bar">
+        <button class="btn btn-primary" onclick="openAnnounceModal()">+ 发布公告</button>
+      </div>
+      <table>
+        <thead><tr><th style="width:240px">标题</th><th>内容摘要</th><th style="width:100px">状态</th><th style="width:140px">发布时间</th><th style="width:140px">操作</th></tr></thead>
+        <tbody id="announce-tbody"><tr><td colspan="5" style="text-align:center;padding:32px;color:#8492a6">加载中..</td></tr></tbody>
+      </table>
+    </div>
+
+  </div>
+</div>
+</div><!-- end main-app -->
+
+<!-- 方案详情模态框 -->
+<div class="modal-overlay" id="plan-modal">
+  <div class="modal" style="width:680px">
+    <div class="modal-header">
+      <h3 id="plan-modal-title">新建旅游方案</h3>
+      <span class="close-btn" onclick="closeModal('plan-modal')"></span>
+    </div>
+    <div class="modal-body">
+      <form id="plan-form">
+        <input type="hidden" id="plan-id">
+        <div class="form-grid">
+          <div class="form-group" style="grid-column:1/-1">
+            <label>方案名称 *</label>
+            <input type="text" id="f-plan-name" placeholder="如：2026春节云南深度游" required>
+          </div>
+          <div class="form-group">
+            <label>旅客 *</label>
+            <select id="f-user-id" required></select>
+          </div>
+          <div class="form-group">
+            <label>团队人数</label>
+            <input type="number" id="f-group-size" value="1" min="1">
+          </div>
+          <div class="form-group">
+            <label>出发日期 *</label>
+            <input type="date" id="f-start-date" required>
+          </div>
+          <div class="form-group">
+            <label>结束日期 *</label>
+            <input type="date" id="f-end-date" required>
+          </div>
+          <div class="form-group">
+            <label>预算（元）</label>
+            <input type="number" id="f-budget" placeholder="预计总费用">
+          </div>
+          <div class="form-group">
+            <label>交通方式</label>
+            <select id="f-transport">
+              <option value="">请选择</option>
+              <option>飞机</option><option>高铁</option><option>自驾</option><option>邮轮</option><option>大巴</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>酒店级别</label>
+            <select id="f-hotel">
+              <option value="">请选择</option>
+              <option>五星级</option><option>四星级</option><option>三星级</option><option>民宿</option><option>青旅</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>方案状态</label>
+            <select id="f-status">
+              <option>待确认</option><option>已确认</option><option>进行中</option><option>已完成</option><option>已取消</option>
+            </select>
+          </div>
+          <div class="form-group" style="grid-column:1/-1">
+            <label>备注</label>
+            <textarea id="f-notes" placeholder="方案说明、特殊要求等..."></textarea>
+          </div>
+        </div>
+      </form>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('plan-modal')">取消</button>
+      <button class="btn btn-primary" onclick="savePlan()">保存方案</button>
+    </div>
+  </div>
+</div>
+
+<!-- 方案详情查看模态框 -->
+<div class="modal-overlay no-print" id="plan-detail-modal">
+  <div class="modal print-area" style="width:720px">
+    <div class="modal-header no-print">
+      <h3 id="detail-plan-name">方案详情</h3>
+      <div style="display:flex;gap:8px;align-items:center">
+        <button class="btn btn-outline btn-sm" onclick="printPlan()" title="打印方案">🖨️ 打印</button>
+        <span class="close-btn" onclick="closeModal('plan-detail-modal')"></span>
+      </div>
+    </div>
+    <div class="modal-body" id="plan-detail-body"></div>
+    <div class="modal-footer no-print">
+      <button class="btn btn-outline" onclick="closeModal('plan-detail-modal')">关闭</button>
+    </div>
+  </div>
+</div>
+
+<!-- 用户模态框 -->
+<div class="modal-overlay" id="user-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 id="user-modal-title">添加用户</h3>
+      <span class="close-btn" onclick="closeModal('user-modal')"></span>
+    </div>
+    <div class="modal-body">
+      <form id="user-form">
+        <input type="hidden" id="user-id">
+        <div class="form-grid">
+          <div class="form-group">
+            <label>姓名 *</label>
+            <input type="text" id="u-name" required placeholder="真实姓名">
+          </div>
+          <div class="form-group">
+            <label>手机号*</label>
+            <input type="tel" id="u-phone" required placeholder="11位手机号">
+          </div>
+          <div class="form-group">
+            <label>邮箱</label>
+            <input type="email" id="u-email" placeholder="电子邮箱（选填）">
+          </div>
+          <div class="form-group">
+            <label>年龄</label>
+            <input type="number" id="u-age" min="1" max="120">
+          </div>
+          <div class="form-group">
+            <label>性别</label>
+            <select id="u-gender">
+              <option value="">请选择</option>
+              <option>男</option><option>女</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>角色</label>
+            <select id="u-role">
+              <option value="user">用户</option>
+              <option value="admin">管理</option>
+            </select>
+          </div>
+          <div class="form-group" style="grid-column:1/-1">
+            <label>备注</label>
+            <textarea id="u-notes" placeholder="旅行偏好、特殊需求等..."></textarea>
+          </div>
+        </div>
+      </form>
+    </div>
+    <div class="modal-footer">
+      <span id="user-save-error" class="form-error-msg"></span>
+      <button class="btn btn-outline" onclick="closeModal('user-modal')">取消</button>
+      <button class="btn btn-primary" onclick="saveUser()">保存</button>
+    </div>
+  </div>
+</div>
+
+<!-- 目的地模态框 -->
+<div class="modal-overlay" id="dest-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 id="dest-modal-title">添加目的地</h3>
+      <span class="close-btn" onclick="closeModal('dest-modal')"></span>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="d-id">
+      <div class="form-grid">
+        <div class="form-group">
+          <label>目的地名称*</label>
+          <input type="text" id="d-name" placeholder="如：北京">
+        </div>
+        <div class="form-group">
+          <label>国家</label>
+          <input type="text" id="d-country" value="中国">
+        </div>
+        <div class="form-group">
+          <label>地区</label>
+          <input type="text" id="d-province" placeholder="省份">
+        </div>
+        <div class="form-group">
+          <label>城市</label>
+          <input type="text" id="d-city" placeholder="城市">
+        </div>
+        <div class="form-group">
+          <label>分类</label>
+          <select id="d-category">
+            <option value="">请选择</option>
+            <option>历史文化</option><option>自然风光</option><option>都市体验</option>
+            <option>休闲度假</option><option>美食文化</option><option>民族文化</option>
+          </select>
+        </div>
+        <div class="form-group" style="grid-column:1/-1">
+          <label>简介</label>
+          <textarea id="d-desc" placeholder="目的地简介.."></textarea>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('dest-modal')">取消</button>
+      <button class="btn btn-primary" onclick="saveDestination()">保存</button>
+    </div>
+  </div>
+</div>
+
+<!-- 目的地详情模态框 -->
+<div class="modal-overlay" id="view-dest-modal">
+  <div class="modal" style="width:560px">
+    <div class="modal-header">
+      <h3 id="view-dest-title">目的地详情</h3>
+      <span class="close-btn" onclick="closeModal('view-dest-modal')"></span>
+    </div>
+    <div class="modal-body" id="view-dest-body">
+      <div style="text-align:center;padding:32px;color:#8492a6">加载中..</div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('view-dest-modal')">关闭</button>
+      <button class="btn btn-primary" id="view-dest-edit-btn" onclick="closeModal('view-dest-modal');setTimeout(()=>openDestModal(viewingDestId),200)">编辑</button>
+    </div>
+  </div>
+</div>
+
+<!-- 公告模态框 -->
+<div class="modal-overlay" id="announce-modal">
+  <div class="modal" style="width:560px">
+    <div class="modal-header">
+      <h3 id="announce-modal-title">发布公告</h3>
+      <span class="close-btn" onclick="closeModal('announce-modal')"></span>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label>公告标题 *</label>
+        <input type="text" id="ann-title" placeholder="请输入公告标题">
+      </div>
+      <div class="form-group">
+        <label>公告内容</label>
+        <textarea id="ann-message" rows="4" placeholder="请输入公告内容.."></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <span class="form-error-msg" id="ann-error"></span>
+      <button class="btn btn-outline" onclick="closeModal('announce-modal')">取消</button>
+      <button class="btn btn-primary" onclick="saveAnnouncement()">发布</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ★★★ 全局错误捕获 ★★★
+window.onerror = function(msg, url, line, col, err) {
+  var el = document.getElementById('server-status');
+  if (el) el.innerHTML = '🔴 JS错误: ' + String(msg).substring(0, 50);
+  console.error('[全局错误]', msg, '行:', line);
+};
+console.log('✅ index.html JS 开始执行');
+
+const API = 'http://localhost:5001/api'
+let currentPage = 'dashboard'
+let usersCache = []
+let authToken = localStorage.getItem('travel_token') || ''
+let currentUser = null
+let announceEditId = null
+
+// ===== 认证状态=====
+function isLoggedIn() { return !!authToken }
+
+// ===== API 封装 =====
+async function api(path, opts = {}) {
+  const headers = { 'Content-Type': 'application/json' }
+  if (authToken) headers['Authorization'] = 'Bearer ' + authToken
+  const r = await fetch(API + path, {
+    headers,
+    ...opts,
+    body: opts.body ? JSON.stringify(opts.body) : undefined
+  })
+  const data = await r.json()
+  if (r.status === 401 || r.status === 403) {
+    // Token 过期或无效，强制登出
+    doLogout()
+    throw new Error('登录已过期，请重新登录')
+  }
+  if (!r.ok) { throw new Error(data.error || '请求失败') }
+  return data
+}
+
+// ===== 认证 =====
+function doLogout() {
+  if (authToken) {
+    fetch(API + '/auth/logout', {
+      method: 'POST',
+      headers: { 'Authorization': 'Bearer ' + authToken }
+    }).catch(() => {})
+  }
+  authToken = ''
+  currentUser = null
+  localStorage.removeItem('travel_token')
+  window.location.href = '/src/frontend/login.html'
+}
+
+// 切换账号 — 弹出账号选择弹窗
+function doSwitchAccount() {
+  const listEl = document.getElementById('switch-account-list');
+  let accounts = [];
+  try { accounts = JSON.parse(localStorage.getItem('travel_accounts') || '[]'); } catch(e) {}
+  // 渲染账号列表（有历史账号时才显示）
+  if (accounts.length > 0) {
+    listEl.innerHTML = accounts.map((acc, idx) => {
+      const roleText = acc.role === 'admin' ? '管理员' : '普通用户';
+      const roleCls = acc.role === 'admin' ? 'admin' : 'user';
+      const timeStr = formatLoginTime(acc.lastLogin);
+      const initial = (acc.name && acc.name.length > 0) ? acc.name.charAt(0) : '?';
+      return '<div class="account-item" onclick="selectAccount(' + idx + ')">' +
+        '<div class="account-avatar">' + escapeHtml(initial) + '</div>' +
+        '<div class="account-info">' +
+          '<div class="account-name">' + escapeHtml(acc.name) +
+            ' <span class="account-role-badge ' + roleCls + '">' + roleText + '</span>' +
+          '</div>' +
+          '<div class="account-meta">' + escapeHtml(acc.email || '') + ' · ' + timeStr + '</div>' +
+        '</div>' +
+      '</div>';
+    }).join('');
+  } else {
+    listEl.innerHTML = '<div class="empty-state-text">暂无历史账号</div>';
+  }
+  // 显示弹窗
+  document.getElementById('switch-account-modal').classList.add('show');
+}
+
+function closeSwitchModal() {
+  document.getElementById('switch-account-modal').classList.remove('show');
+}
+
+async function selectAccount(idx) {
+  let accounts = [];
+  try { accounts = JSON.parse(localStorage.getItem('travel_accounts') || '[]'); } catch(e) {}
+  if (idx >= accounts.length) return;
+  const acc = accounts[idx];
+  try {
+    const r = await fetch(API + '/auth/me', {
+      headers: { 'Authorization': 'Bearer ' + acc.token }
+    });
+    const data = await r.json();
+    if (r.ok && data.user) {
+      // 更新历史登录时间
+      acc.lastLogin = new Date().toISOString();
+      accounts[idx] = acc;
+      localStorage.setItem('travel_accounts', JSON.stringify(accounts));
+      localStorage.setItem('travel_token', acc.token);
+      closeSwitchModal();
+      // 根据角色直接跳转对应端，无需重新登录
+      if (data.user.role === 'admin') {
+        window.location.href = '/src/frontend/index.html';
+      } else {
+        window.location.href = '/src/frontend/user.html';
+      }
+    } else {
+      accounts.splice(idx, 1);
+      localStorage.setItem('travel_accounts', JSON.stringify(accounts));
+      alert('该账号登录已过期，请重新登录');
+      doSwitchAccount();
+    }
+  } catch(e) {
+    alert('网络错误，请稍后重试');
+  }
+}
+
+function loginNewAccount() {
+  authToken = '';
+  currentUser = null;
+  localStorage.removeItem('travel_token');
+  closeSwitchModal();
+  // 动态检测当前域名，跳转到登录页
+  const base = window.location.origin;
+  window.location.href = '/src/frontend/login.html';
+}
+
+// 格式化登录时间
+function formatLoginTime(isoStr) {
+  if (!isoStr) return '未知时间';
+  const diff = Date.now() - new Date(isoStr).getTime();
+  const mins = Math.floor(diff / 60000);
+  if (mins < 1) return '刚刚';
+  if (mins < 60) return mins + '分钟前';
+  const hours = Math.floor(mins / 60);
+  if (hours < 24) return hours + '小时前';
+  const days = Math.floor(hours / 24);
+  if (days < 30) return days + '天前';
+  return new Date(isoStr).toLocaleDateString('zh-CN');
+}
+
+// 简单 HTML 转义
+function escapeHtml(str) {
+  if (!str) return '';
+  return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// 页面启动：校验token，无效则跳转登录页
+(async function init() {
+  const token = localStorage.getItem('travel_token')
+  console.log('[init] token:', token ? 'found' : 'NOT FOUND')
+  if (!token) { window.location.href = '/src/frontend/login.html'; return }
+
+  try {
+    console.log('[init] fetching /auth/me...')
+    const r = await fetch(API + '/auth/me', {
+      headers: { 'Authorization': 'Bearer ' + token }
+    })
+    console.log('[init] /auth/me status:', r.status)
+    const data = await r.json()
+    console.log('[init] /auth/me data:', data)
+    if (r.ok && data.user) {
+      console.log('[init] user role:', data.user.role)
+      // 非管理员禁止进入后台
+      if (data.user.role !== 'admin') {
+        localStorage.removeItem('travel_token')
+        window.location.href = '/src/frontend/login.html'
+        return
+      }
+      authToken = token
+      currentUser = data.user
+      document.getElementById('current-user-display').textContent = '👤 ' + currentUser.name
+      console.log('[init] calling loadDashboard...')
+      loadDashboard()
+    } else {
+      console.log('[init] auth failed, redirecting to login')
+      localStorage.removeItem('travel_token')
+      window.location.href = '/src/frontend/login.html'
+    }
+  } catch (e) {
+    console.error('[init] ERROR:', e.message || e)
+    document.getElementById('server-status').innerHTML = '🔴 错误: ' + (e.message || '网络错误')
+    // 网络错误时，如果有 token 且不是管理员页面，尝试继续（用 localStorage 数据）
+    const t = localStorage.getItem('travel_token');
+    if (t) {
+      try {
+        const cached = JSON.parse(localStorage.getItem('user') || '{}');
+        if (cached && cached.role === 'admin') {
+          authToken = t;
+          currentUser = cached;
+          document.getElementById('current-user-display').textContent = '👤 ' + currentUser.name;
+          loadDashboard();
+          return;
+        }
+      } catch(e2) {}
+    }
+    // 无法恢复，跳转登录页
+    setTimeout(() => { window.location.href = '/src/frontend/login.html'; }, 2000);
+  }
+})()
+
+// ===== 导航 =====
+function navigate(page) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'))
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'))
+  document.getElementById('page-' + page).classList.add('active')
+  document.querySelectorAll('.nav-item')[['dashboard','plans','users','destinations','announcements'].indexOf(page)].classList.add('active')
+  const titles = {dashboard:'仪表盘',plans:'旅游方案',users:'用户管理',destinations:'目的地管理',announcements:'系统公告'}
+  document.getElementById('page-title').textContent = titles[page]
+  currentPage = page
+  if (page === 'dashboard') loadDashboard()
+  if (page === 'plans') loadPlans()
+  if (page === 'users') loadUsers()
+  if (page === 'destinations') loadDestinations()
+  if (page === 'announcements') loadAnnouncements()
+}
+
+// ===== 仪表盘=====
+// 保存 chart 实例，切换页面时销毁重建
+let chartStatus = null, chartMonthly = null, chartDest = null
+
+async function loadDashboard() {
+  try {
+    const s = await api('/stats')
+    document.getElementById('stat-users').textContent = s.totalUsers
+    document.getElementById('stat-plans').textContent = s.totalPlans
+    document.getElementById('stat-active').textContent = s.activePlans
+    document.getElementById('stat-revenue').textContent = '¥' + s.totalRevenue.toLocaleString()
+
+    // ===== 1. 状态分布饼图
+    if (typeof Chart === 'undefined') {
+      console.warn('[Dashboard] Chart.js 未加载，跳过图表渲染');
+    } else {
+    const statusColors = {'待审核':'#fbbf24','待确认':'#fbbf24','已确认':'#60a5fa','进行中':'#34d399','已完成':'#a78bfa','已驳回':'#f87171','已取消':'#9ca3af'}
+    const statusLabels = s.statusDistribution.map(d => d.status)
+    const statusData   = s.statusDistribution.map(d => d.count)
+    const statusBg     = statusLabels.map(l => statusColors[l] || '#60a5fa')
+    if (chartStatus) chartStatus.destroy()
+    chartStatus = new Chart(document.getElementById('chart-status'), {
+      type: 'doughnut',
+      data: {
+        labels: statusLabels,
+        datasets: [{ data: statusData, backgroundColor: statusBg, borderWidth: 2, borderColor: '#fff' }]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: { legend: { position: 'bottom', labels: { font: { size: 11 }, padding: 12 } } }
+      }
+    })
+
+    // ===== 2. 月度趋势折线图=====
+    const monthLabels = s.monthlyTrend.map(m => m.month)
+    const monthData   = s.monthlyTrend.map(m => m.count)
+    if (chartMonthly) chartMonthly.destroy()
+    chartMonthly = new Chart(document.getElementById('chart-monthly'), {
+      type: 'line',
+      data: {
+        labels: monthLabels,
+        datasets: [{
+          label: '方案数',
+          data: monthData,
+          borderColor: '#2563eb', backgroundColor: 'rgba(37,99,235,.1)',
+          fill: true, tension: 0.35, pointRadius: 3, pointBackgroundColor: '#2563eb'
+        }]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: { y: { beginAtZero: true, ticks: { stepSize: 1, font: { size: 11 } } } }
+      }
+    })
+
+    // ===== 3. 热门目的地横向柱状图 =====
+    const destLabels = (s.topDestinations || []).map(d => d.name)
+    const destData   = (s.topDestinations || []).map(d => d.count)
+    if (chartDest) chartDest.destroy()
+    chartDest = new Chart(document.getElementById('chart-dest'), {
+      type: 'bar',
+      data: {
+        labels: destLabels,
+        datasets: [{
+          label: '出现次数',
+          data: destData,
+          backgroundColor: 'rgba(37,99,235,.65)',
+          borderRadius: 4, barThickness: 14
+        }]
+      },
+      options: {
+        indexAxis: 'y',
+        responsive: true, maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: {
+          x: { beginAtZero: true, ticks: { stepSize: 1, font: { size: 11 } } },
+          y: { ticks: { font: { size: 11 } } }
+        }
+      }
+    })
+
+    }
+
+
+    // 近期方案
+    const tbody = document.getElementById('recent-plans-tbody')
+    tbody.innerHTML = s.recentPlans.map(p => `
+      <tr>
+        <td>${p.planName}</td>
+        <td>${p.userName||''}</td>
+        <td>${p.startDate}</td>
+        <td><span class="badge ${p.status}">${p.status}</span></td>
+      </tr>`).join('') || '<tr><td colspan="4" style="text-align:center;color:#8492a6;padding:20px">暂无方案</td></tr>'
+    document.getElementById('server-status').innerHTML = '🟢 已连接'
+  } catch(e) {
+    document.getElementById('server-status').innerHTML = '🔴 服务未启动'
+    showError('无法连接后端服务，请先启动Spring Boot 应用')
+  }
+}
+
+// ===== 方案列表 =====
+async function loadPlans() {
+  const keyword = document.getElementById('plan-search')?.value || ''
+  const status = document.getElementById('plan-status-filter')?.value || ''
+  let url = '/plans?'
+  if (keyword) url += 'keyword=' + encodeURIComponent(keyword) + '&'
+  if (status) url += 'status=' + encodeURIComponent(status)
+  const tbody = document.getElementById('plans-tbody')
+  try {
+    const plans = await api(url)
+    tbody.innerHTML = plans.length ? plans.map(p => {
+      const actual = p.actualCost ? Number(p.actualCost) : 0
+      const budget = p.budget ? Number(p.budget) : 0
+      const overBudget = budget > 0 && actual > budget
+      const costColor = overBudget ? 'color:#dc2626;font-weight:600' : ''
+      const costText  = actual > 0 ? '¥' + actual.toLocaleString() : ''
+      const warnText   = overBudget ? ' ⚠️超支' : ''
+      return `<tr>
+        <td><a href="#" onclick="viewPlan(${p.id});return false" style="color:#2563eb;text-decoration:none;font-weight:500">${p.planName}</a></td>
+        <td>${p.userName||''}</td>
+        <td>${p.startDate}</td>
+        <td>${p.totalDays||''} </td>
+        <td>${p.groupSize||1}人</td>
+        <td>${p.budget ? '¥'+Number(p.budget).toLocaleString() : ''}</td>
+        <td style="${costColor}">${costText}${warnText}</td>
+        <td><span class="badge ${p.status}">${p.status}</span></td>
+        <td>
+          ${p.status==='待审核' ? `
+            <button class="btn btn-primary btn-sm" onclick="auditPlan(${p.id},'approved')" style="margin-right:4px">✅ 通过</button>
+            <button class="btn btn-danger btn-sm" onclick="auditPlan(${p.id},'rejected')">❌ 驳回</button>
+          ` : (p.auditorName ? `<span style="font-size:11px;color:#8492a6">${p.auditorName} ${p.auditTime?.slice(0,16)||''}</span>` : `
+            <button class="btn btn-outline btn-sm" onclick="editPlan(${p.id})">编辑</button>
+            <button class="btn btn-danger btn-sm" onclick="deletePlan(${p.id})">删除</button>
+          `)}
+        </td>
+      </tr>`
+    }).join('') : '<tr><td colspan="9" class="empty-state"><p>暂无旅游方案</p></td></tr>'
+  } catch(e) { tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;color:#dc2626;padding:20px">加载失败' + e.message + '</td></tr>' }
+}
+
+async function auditPlan(id, action) {
+  const comment = action === 'rejected' ? prompt('请输入驳回原因：') : null
+  if (action === 'rejected' && comment === null) return // 点了取消
+  try {
+    const body = {
+      status: action === 'approved' ? '已确认' : '已驳回',
+      auditorName: currentUser?.name || '',
+      auditComment: action === 'rejected' ? (comment || '') : '审核通过',
+    }
+    // 不传 auditTime，让后端用LocalDateTime.now() 自动设置
+    await api('/plans/' + id + '/status', { method:'PATCH', body })
+    loadPlans()
+    if (currentPage === 'dashboard') loadDashboard()
+  } catch(e) { showToast('操作失败' + e.message) }
+}
+
+// ===== 用户列表 =====
+async function loadUsers() {
+  const keyword = document.getElementById('user-search')?.value || ''
+  const tbody = document.getElementById('users-tbody')
+  try {
+    const users = await api('/users' + (keyword ? '?keyword=' + encodeURIComponent(keyword) : ''))
+    usersCache = users
+    tbody.innerHTML = users.length ? users.map(u => {
+      const roleTag = u.role === 'admin'
+        ? '<span style="background:#2563eb;color:#fff;padding:2px 8px;border-radius:4px;font-size:11px">管理</span>'
+        : '<span style="background:#e8eaf0;color:#374151;padding:2px 8px;border-radius:4px;font-size:11px">用户</span>'
+      const isSelf = u.id === currentUser?.id
+      const roleHtml = isSelf
+        ? roleTag + ' <span style="font-size:10px;color:#8492a6">(当前)</span>'
+        : roleTag
+      return `<tr>
+        <td style="font-weight:500">${u.name}</td>
+        <td>${u.phone}</td>
+        <td>${u.email||''}</td>
+        <td>${u.age||''}</td>
+        <td>${u.gender||''}</td>
+        <td>${roleHtml}</td>
+        <td style="color:#8492a6">${u.createdAt?.slice(0,10)||''}</td>
+        <td>
+          <button class="btn btn-outline btn-sm" onclick="editUser(${u.id})">编辑</button>
+          <button class="btn btn-danger btn-sm" onclick="deleteUser(${u.id})">删除</button>
+        </td>
+      </tr>`
+    }).join('') : '<tr><td colspan="8" class="empty-state"><p>暂无用户</p></td></tr>'
+  } catch(e) { tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;color:#dc2626;padding:20px">加载失败' + e.message + '</td></tr>' }
+}
+
+async function updateUserRole(userId, newRole) {
+  // 防止管理员把自己降权
+  if (userId === currentUser?.id && newRole !== 'admin') {
+    showToast('不能修改自己的管理员角色')
+    loadUsers()  // 重置下拉框    return
+  }
+  try {
+    await api('/users/' + userId, {method:'PUT', body:{role: newRole}})
+    loadUsers()
+  } catch(e) { showToast('角色更新失败' + e.message); loadUsers() }
+}
+
+// ===== 目的地=====
+async function loadDestinations() {
+  const grid = document.getElementById('dest-grid')
+  try {
+    const kw = document.getElementById('dest-search-admin')?.value || ''
+    const cat = document.getElementById('dest-category-admin')?.value || ''
+    let url = '/destinations?'
+    if (kw) url += 'keyword=' + encodeURIComponent(kw) + '&'
+    if (cat) url += 'category=' + encodeURIComponent(cat)
+    const dests = await api(url)
+    const catColors = {'历史文化':'#3b82f6','自然风光':'#10b981','都市体验':'#8b5cf6','休闲度假':'#f59e0b','美食文化':'#ef4444','民族文化':'#ec4899'}
+    grid.innerHTML = dests.map(d => `
+      <div class="card dest-card" style="padding:20px;display:flex;flex-direction:column;justify-content:space-between;min-height:190px;transition:transform .2s ease,box-shadow .2s ease">
+        <div>
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px">
+            <div style="min-width:0;flex:1">
+              <div class="dest-name">${d.name}</div>
+              <div class="dest-subtitle">${d.province||''} · ${d.city||''}</div>
+            </div>
+            ${d.category ? `<span style="font-size:11px;padding:3px 9px;border-radius:5px;background:${catColors[d.category]||'#64748b'}22;color:${catColors[d.category]||'#64748b'};white-space:nowrap;font-weight:500">${d.category}</span>` : ''}
+          </div>
+          <div class="dest-desc">${d.description||'暂无简介'}</div>
+        </div>
+        <div class="dest-actions">
+          <button class="btn btn-sm btn-outline" onclick="viewDestination(${d.id})">查看详情</button>
+          <button class="btn btn-sm btn-primary" onclick="openDestModal(${d.id})">编辑</button>
+          <button class="btn btn-sm btn-danger" onclick="deleteDestination(${d.id})">删除</button>
+        </div>
+      </div>`).join('') || '<div style="text-align:center;color:#8492a6;grid-column:1/-1">暂无目的地</div>'
+  } catch(e) { grid.innerHTML = '<div style="color:#dc2626">加载失败' + e.message + '</div>' }
+}
+
+let viewingDestId = null
+async function viewDestination(id) {
+  viewingDestId = id
+  const body = document.getElementById('view-dest-body')
+  body.innerHTML = '<div style="text-align:center;padding:32px;color:#8492a6">加载中..</div>'
+  openModal('view-dest-modal')
+  try {
+    const d = await api('/destinations/' + id)
+    const catColors = {'历史文化':'#3b82f6','自然风光':'#10b981','都市体验':'#8b5cf6','休闲度假':'#f59e0b','美食文化':'#ef4444','民族文化':'#ec4899'}
+    const catColor = catColors[d.category] || '#64748b'
+    const imgHtml = d.imageUrl
+      ? `<div style="margin-bottom:16px;border-radius:10px;overflow:hidden;max-height:180px;background:#f0f0f0"><img src="${d.imageUrl}" style="width:100%;height:180px;object-fit:cover" onerror="this.parentElement.style.display='none'"></div>`
+      : ''
+    body.innerHTML = `
+      ${imgHtml}
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">
+        <h2 style="font-size:20px;font-weight:600;color:#1a2332;margin:0">${d.name}</h2>
+        ${d.category ? `<span style="font-size:12px;padding:3px 10px;border-radius:6px;background:${catColor}15;color:${catColor};font-weight:500">${d.category}</span>` : ''}
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px">
+        <div class="detail-item"><span class="detail-label">国家</span><span class="detail-value">${d.country||''}</span></div>
+        <div class="detail-item"><span class="detail-label">省/地区</span><span class="detail-value">${d.province||''}</span></div>
+        <div class="detail-item"><span class="detail-label">城市</span><span class="detail-value">${d.city||''}</span></div>
+        <div class="detail-item"><span class="detail-label">创建时间</span><span class="detail-value">${(d.createdAt||'').replace('T',' ').slice(0,19)}</span></div>
+      </div>
+      <div class="detail-item" style="margin-bottom:0">
+        <span class="detail-label">简介</span>
+        <div class="detail-value" style="margin-top:6px;line-height:1.8;color:#374151;white-space:pre-wrap">${d.description||'暂无简介'}</div>
+      </div>`
+  } catch(e) {
+    body.innerHTML = `<div style="color:#dc2626;padding:20px;text-align:center">加载失败${e.message}</div>`
+  }
+}
+
+// ===== 方案操作 =====
+async function openPlanModal(plan = null) {
+  document.getElementById('plan-modal-title').textContent = plan ? '编辑旅游方案' : '新建旅游方案'
+  document.getElementById('plan-id').value = plan?.id || ''
+  document.getElementById('f-plan-name').value = plan?.planName || ''
+  document.getElementById('f-group-size').value = plan?.groupSize || 1
+  document.getElementById('f-start-date').value = plan?.startDate || ''
+  document.getElementById('f-end-date').value = plan?.endDate || ''
+  document.getElementById('f-budget').value = plan?.budget || ''
+  document.getElementById('f-status').value = plan?.status || '待审核'
+  document.getElementById('f-transport').value = plan?.transportType || ''
+  document.getElementById('f-hotel').value = plan?.hotelLevel || ''
+  document.getElementById('f-notes').value = plan?.notes || ''
+  // 加载用户选项
+  const sel = document.getElementById('f-user-id')
+  try {
+    if (!usersCache.length) usersCache = await api('/users')
+    sel.innerHTML = usersCache.map(u => `<option value="${u.id}" ${plan?.userId==u.id?'selected':''}>${u.name} (${u.phone})</option>`).join('')
+  } catch(e) { sel.innerHTML = '<option>加载失败</option>' }
+  openModal('plan-modal')
+}
+
+async function editPlan(id) {
+  const plan = await api('/plans/' + id)
+  openPlanModal(plan)
+}
+
+async function savePlan() {
+  const id = document.getElementById('plan-id').value
+  const data = {
+    planName: document.getElementById('f-plan-name').value,
+    userId: document.getElementById('f-user-id').value,
+    groupSize: document.getElementById('f-group-size').value,
+    startDate: document.getElementById('f-start-date').value,
+    endDate: document.getElementById('f-end-date').value,
+    budget: document.getElementById('f-budget').value,
+    status: document.getElementById('f-status').value,
+    transportType: document.getElementById('f-transport').value,
+    hotelLevel: document.getElementById('f-hotel').value,
+    notes: document.getElementById('f-notes').value,
+  }
+  try {
+    if (id) { await api('/plans/' + id, {method:'PUT', body:data}) }
+    else { await api('/plans', {method:'POST', body:data}) }
+    closeModal('plan-modal')
+    loadPlans()
+  } catch(e) { showToast('保存失败' + e.message) }
+}
+
+async function deletePlan(id) {
+  if (!confirm('确认删除此旅游方案？')) return
+  await api('/plans/' + id, {method:'DELETE'})
+  loadPlans()
+}
+
+async function viewPlan(id) {
+  const plan = await api('/plans/' + id)
+  document.getElementById('detail-plan-name').textContent = plan.planName
+  const body = document.getElementById('plan-detail-body')
+
+  // 自动汇总行程项花费
+  const totalCost = (plan.itinerary || []).reduce((s, i) => s + (i.cost || 0), 0)
+  const budget = plan.budget ? Number(plan.budget) : 0
+  const overBudget = budget > 0 && totalCost > budget
+  const diff = budget > 0 ? (totalCost - budget) : 0
+
+  let html = `
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px">
+      <div><span style="font-size:12px;color:#8492a6">旅客：</span><span style="font-weight:500">${plan.userName||''}</span></div>
+      <div><span style="font-size:12px;color:#8492a6">联系电话：</span>${plan.userPhone||''}</div>
+      <div><span style="font-size:12px;color:#8492a6">出发日期：</span>${plan.startDate}</div>
+      <div><span style="font-size:12px;color:#8492a6">结束日期：</span>${plan.endDate}（共${plan.totalDays}天）</div>
+      <div><span style="font-size:12px;color:#8492a6">团队人数：</span>${plan.groupSize}人</div>
+      <div><span style="font-size:12px;color:#8492a6">方案状态：</span><span class="badge ${plan.status}">${plan.status}</span></div>
+      <div><span style="font-size:12px;color:#8492a6">交通方式：</span>${plan.transportType||''}</div>
+      <div><span style="font-size:12px;color:#8492a6">酒店级别：</span>${plan.hotelLevel||''}</div>
+      <div><span style="font-size:12px;color:#8492a6">预算：</span>${budget ? '¥'+budget.toLocaleString() : ''}</div>
+      <div style="${overBudget?'background:#fef2f2;padding:8px 12px;border-radius:8px;border:1px solid #fca5a5':'font-weight:500'}">
+        <span style="font-size:12px;color:#8492a6">实际花费：</span>
+        <span style="${overBudget?'color:#dc2626;font-weight:600':'font-weight:500'}">¥${totalCost.toLocaleString()}</span>
+        ${overBudget ? `<span style="color:#dc2626;font-size:12px;margin-left:6px">⚠️ 超支 ¥${diff.toLocaleString()}</span>` : ''}
+      </div>
+    </div>`
+  // 审核信息
+  if (plan.auditorName) {
+    html += `<div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:12px;margin-bottom:16px;font-size:13px">
+      <span style="font-weight:500">审核人：</span>${plan.auditorName} ·
+      <span style="color:#8492a6">${plan.auditTime?.slice(0,16)||''}</span>
+      ${plan.auditComment ? `<br><span style="color:#6b7280">${plan.auditComment}</span>` : ''}
+    </div>`}
+  if (plan.notes) html += `<div style="background:rgba(255,255,255,0.04);border-radius:8px;padding:12px;font-size:13px;color:#6b7280;margin-bottom:20px">${plan.notes}</div>`
+  if (plan.itinerary?.length) {
+    const days = {}
+    plan.itinerary.forEach(i => { if(!days[i.dayNumber]) days[i.dayNumber]=[]; days[i.dayNumber].push(i) })
+    html += '<div style="font-size:13px;font-weight:500;margin-bottom:10px">行程安排</div>'
+    html += '<div class="itinerary-editor">'
+    Object.entries(days).forEach(([day, items]) => {
+      html += `<div class="itinerary-day"><div class="day-header">第{day}天 · ${items[0].date||''}</div>`
+      items.forEach(i => {
+        html += `<div class="day-item"><div class="day-item-info">
+          <div style="font-size:13px;color:#374151;margin-bottom:3px">${i.activity} · <b>${i.destinationName}</b></div>
+          <div>${i.startTime||''}${i.endTime?' - '+i.endTime:''} ${i.location?'📍'+i.location:''} ${i.cost?'¥'+i.cost:''}</div>
+          ${i.hotel?'<div>🏨 '+i.hotel+'</div>':''}</div></div>`
+      })
+      html += '</div>'
+    })
+    html += '</div>'
+  } else {
+    html += '<div style="text-align:center;color:#8492a6;padding:20px;font-size:13px">暂无行程详情</div>'
+  }
+  body.innerHTML = html
+  openModal('plan-detail-modal')
+}
+
+function printPlan() {
+  window.print()
+}
+
+// ===== 用户操作 =====
+function openUserModal(user = null) {
+  document.getElementById('user-save-error').textContent = ''
+  document.getElementById('user-modal-title').textContent = user ? '编辑用户' : '添加用户'
+  document.getElementById('user-id').value = user?.id || ''
+  document.getElementById('u-name').value = user?.name || ''
+  document.getElementById('u-phone').value = user?.phone || ''
+  document.getElementById('u-email').value = user?.email || ''
+  document.getElementById('u-age').value = user?.age || ''
+  document.getElementById('u-gender').value = user?.gender || ''
+  document.getElementById('u-role').value = user?.role || 'user'
+  document.getElementById('u-notes').value = user?.notes || ''
+  openModal('user-modal')
+}
+
+async function editUser(id) {
+  const user = await api('/users/' + id)
+  openUserModal(user)
+}
+
+async function saveUser() {
+  const errEl = document.getElementById('user-save-error')
+  errEl.textContent = ''
+  const id = document.getElementById('user-id').value
+  const name = document.getElementById('u-name').value.trim()
+  const phone = document.getElementById('u-phone').value.trim()
+  const email = document.getElementById('u-email').value.trim()
+
+  // 姓名校验：-20个字符，中文/英文/空格
+  if (!name) { errEl.textContent = '请输入姓名'; return }
+  if (name.length < 2 || name.length > 20) { errEl.textContent = '姓名长度需在2-20个字符之间'; return }
+  if (!/^[\u4e00-\u9fa5a-zA-Z·\s]+$/.test(name)) { errEl.textContent = '姓名只能包含中文、英文和空格'; return }
+
+  // 手机号校验：11位中国大陆手机号
+  if (!phone) { errEl.textContent = '请输入手机号'; return }
+  if (!/^1[3-9]\d{9}$/.test(phone)) { errEl.textContent = '请输入正确的11位手机号'; return }
+
+  // 邮箱校验：如果填了，必须符合格式
+  if (email && !/^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$/.test(email)) {
+    errEl.textContent = '邮箱格式不正确'; return
+  }
+
+  const data = {
+    name: name,
+    phone: phone,
+    email: email || null,
+    age: document.getElementById('u-age').value || null,
+    gender: document.getElementById('u-gender').value || null,
+    role: document.getElementById('u-role').value || 'user',
+    notes: document.getElementById('u-notes').value || null,
+  }
+  try {
+    if (id) await api('/users/' + id, {method:'PUT', body:data})
+    else await api('/users', {method:'POST', body:data})
+    closeModal('user-modal')
+    loadUsers()
+  } catch(e) { errEl.textContent = '保存失败' + e.message }
+}
+
+async function deleteUser(id) {
+  if (!confirm('确认删除此用户？相关旅游方案也会一并删除。')) return
+  await api('/users/' + id, {method:'DELETE'})
+  loadUsers()
+}
+
+// ===== 目的地操作=====
+async function openDestModal(id = null) {
+  document.getElementById('d-id').value = ''
+  document.getElementById('dest-modal-title').textContent = '添加目的地'
+  document.getElementById('d-name').value = ''
+  document.getElementById('d-country').value = '中国'
+  document.getElementById('d-province').value = ''
+  document.getElementById('d-city').value = ''
+  document.getElementById('d-category').value = ''
+  document.getElementById('d-desc').value = ''
+  if (id) {
+    try {
+      const d = await api('/destinations/' + id)
+      document.getElementById('dest-modal-title').textContent = '编辑目的地'
+      document.getElementById('d-id').value = d.id
+      document.getElementById('d-name').value = d.name || ''
+      document.getElementById('d-country').value = d.country || '中国'
+      document.getElementById('d-province').value = d.province || ''
+      document.getElementById('d-city').value = d.city || ''
+      document.getElementById('d-category').value = d.category || ''
+      document.getElementById('d-desc').value = d.description || ''
+    } catch(e) { showToast('加载失败' + e.message); return }
+  }
+  openModal('dest-modal')
+}
+async function saveDestination() {
+  const id = document.getElementById('d-id').value
+  const name = document.getElementById('d-name').value.trim()
+  if (!name) { showToast('请输入目的地名称'); return }
+  if (name.length < 2 || name.length > 20) { showToast('目的地名称长度需在2-20个字符之间'); return }
+  const data = {
+    name,
+    country: document.getElementById('d-country').value,
+    province: document.getElementById('d-province').value,
+    city: document.getElementById('d-city').value,
+    category: document.getElementById('d-category').value,
+    description: document.getElementById('d-desc').value,
+  }
+  try {
+    if (id) {
+      await api('/destinations/' + id, {method:'PUT', body:data})
+    } else {
+      await api('/destinations', {method:'POST', body:data})
+    }
+    closeModal('dest-modal')
+    loadDestinations()
+  } catch(e) { showToast('保存失败' + e.message) }
+}
+
+// ===== 通用 =====
+async function deleteDestination(id) {
+  if (!confirm('确认删除该目的地？')) return;
+  try {
+    await api('/destinations/' + id, { method:'DELETE' })
+    loadDestinations()
+  } catch(e) { showToast('删除失败' + e.message) }
+}
+
+function openModal(id) { document.getElementById(id).classList.add('show') }
+function closeModal(id) { document.getElementById(id).classList.remove('show') }
+function showError(msg) {
+  const s = document.getElementById('status-chart')
+  if(s) s.innerHTML = `<div style="color:#dc2626;font-size:13px;padding:10px">${msg}</div>`
+}
+
+// 点击遮罩关闭
+document.querySelectorAll('.modal-overlay').forEach(m => {
+  m.addEventListener('click', e => { if (e.target === m) m.classList.remove('show') })
+})
+
+// 键盘 Enter 快捷登录
+document.getElementById('login-password')?.addEventListener('keydown', e => { if (e.key === 'Enter') doLogin() })
+document.getElementById('reg-password2')?.addEventListener('keydown', e => { if (e.key === 'Enter') doRegister() })
+
+// ===== 系统公告管理 =====
+// announceEditId 已在上方全局声明
+
+async function loadAnnouncements() {
+  const tbody = document.getElementById('announce-tbody')
+  try {
+    const list = await api('/notifications/announcements/all')
+    if (!list.length) {
+      tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:32px;color:#8492a6">还没有公告</td></tr>'
+      return
+    }
+    tbody.innerHTML = list.map(a => `
+      <tr>
+        <td style="font-weight:500">${a.title}</td>
+        <td style="color:var(--gray);max-width:260px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${a.message||''}</td>
+        <td><span class="badge ${a.isActive?'进行中':'已取消'}" style="font-size:11px">${a.isActive?'🟢 启用':'🔴 已下线'}</span></td>
+        <td style="color:var(--gray);font-size:12px">${a.createdAt?.slice(0,16)||''}</td>
+        <td>
+          <button class="btn btn-outline btn-sm" onclick="editAnnouncement(${a.id})">编辑</button>
+          ${a.isActive ? `<button class="btn btn-primary btn-sm" onclick="toggleAnnounce(${a.id},false)" style="margin-left:4px">下架</button>` : `<button class="btn btn-primary btn-sm" onclick="toggleAnnounce(${a.id},true)" style="margin-left:4px">启用</button>`}
+        </td>
+      </tr>`).join('')
+  } catch(e) {
+    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:#dc2626;padding:20px">加载失败' + e.message + '</td></tr>'
+  }
+}
+
+function openAnnounceModal() {
+  announceEditId = null
+  document.getElementById('announce-modal-title').textContent = '发布公告'
+  document.getElementById('ann-title').value = ''
+  document.getElementById('ann-message').value = ''
+  document.getElementById('ann-error').textContent = ''
+  document.getElementById('announce-modal').classList.add('show')
+}
+
+async function editAnnouncement(id) {
+  try {
+    const list = await api('/notifications/announcements/all')
+    const a = list.find(x => x.id === id)
+    if (!a) return
+    announceEditId = id
+    document.getElementById('announce-modal-title').textContent = '编辑公告'
+    document.getElementById('ann-title').value = a.title
+    document.getElementById('ann-message').value = a.message || ''
+    document.getElementById('ann-error').textContent = ''
+    document.getElementById('announce-modal').classList.add('show')
+  } catch(e) { showToast('加载失败' + e.message) }
+}
+
+async function saveAnnouncement() {
+  const errEl = document.getElementById('ann-error')
+  const title = document.getElementById('ann-title').value.trim()
+  if (!title) { errEl.textContent = '请输入公告标题'; return }
+  const message = document.getElementById('ann-message').value.trim()
+
+  try {
+    if (announceEditId) {
+      await api('/notifications/announcements/' + announceEditId, { method:'PUT', body:{title, message} })
+    } else {
+      await api('/notifications/announcements', { method:'POST', body:{title, message} })
+    }
+    closeModal('announce-modal')
+    loadAnnouncements()
+  } catch(e) {
+    errEl.textContent = '保存失败' + e.message
+  }
+}
+
+async function toggleAnnounce(id, active) {
+  try {
+    await api('/notifications/announcements/' + id, { method:'PUT', body:{isActive: String(active)} })
+    loadAnnouncements()
+  } catch(e) { showToast('操作失败' + e.message) }
+}
+
+</script>
+
+<div class="toast-container" id="toast-container"></div>
+  <script src="/src/frontend/toast.js"></script>
+  <script src="/src/frontend/theme.js"></script>
+  <!-- ★ 诊断状态栏 ★ -->
+  <div id="js-status-bar" style="position:fixed;bottom:0;left:0;right:0;height:20px;background:#166534;color:#fff;font-size:11px;text-align:center;line-height:20px;z-index:99999">✅ JS 已加载 | 函数: <span id="diag-fn">检测中..</span></div>
+  <script>
+  (function(){
+    var fns = [];
+    for (var k in window) { if (typeof window[k] === 'function') fns.push(k); }
+    var key = ['loadDashboard','loadPlans','loadUsers','loadDestinations','loadAnnouncements','navigate','doLogout','saveUser','openUserModal','closeModal','openDestModal','saveAnnouncement','saveDestination','savePlan'];
+    var found = key.filter(function(k){ return typeof window[k] === 'function'; });
+    document.getElementById('diag-fn').textContent = found.length + '/' + key.length + ' 已定义';
+    console.log('[诊断]', found);
+    if (found.length < key.length) {
+      var missing = key.filter(function(k){ return typeof window[k] !== 'function'; });
+      console.error('[诊断] 缺失函数:', missing);
+      document.getElementById('js-status-bar').style.background = '#991b1b';
+      document.getElementById('diag-fn').textContent = '缺失: ' + missing.join(', ');
+    }
+  })();
+  </script>
+<script src="/src/frontend/nebula-particles.js"></script>
+<script src="/src/frontend/nebula-interactions.js"></script>
+<script>
+// 初始化粒子背景
+// 初始化交互（3D 倾斜 + 视差）
+NebulaInteractions.init({ tiltSelector: '.stat-card', parallaxSelector: '.page.active' });
+</script>
+
+<!-- 动态控制主题样式块：深色启用 nuclear-dark，浅色启用 light-mode-fix -->
+<script>
+(function() {
+  function updateThemeStyles() {
+    var theme = (document.documentElement.dataset.theme || localStorage.getItem('theme') || 'dark').trim();
+    var isDark = (theme === 'dark');
+    // nuclear-dark: 深色模式时启用，浅色时禁用
+    var nd = document.getElementById('nuclear-dark');
+    if (nd) nd.disabled = !isDark;
+    // light-mode-fix: 浅色模式时启用，深色时禁用
+    var lf = document.getElementById('light-mode-fix');
+    if (lf) lf.disabled = isDark;
+  }
+
+  // 初始执行
+  updateThemeStyles();
+
+  // 监听 data-theme 属性变化
+  var observer = new MutationObserver(function(mutations) {
+    mutations.forEach(function(m) {
+      if (m.attributeName === 'data-theme') updateThemeStyles();
+    });
+  });
+  observer.observe(document.documentElement, { attributes: true });
+
+  // DOMContentLoaded 后保险再执行一次
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', updateThemeStyles);
+  }
+})();
+</script>
+
+<!-- 切换账号弹窗 -->
+<div class="modal-overlay" id="switch-account-modal" style="display:none" onclick="if(event.target===this)closeSwitchModal()">
+  <div class="modal-panel" style="max-width:420px">
+    <div class="modal-header">
+      <h3>切换账号</h3>
+      <button class="modal-close" onclick="closeSwitchModal()">&times;</button>
+    </div>
+    <div class="modal-body" id="switch-account-list" style="padding:8px 12px;max-height:380px;overflow-y:auto"></div>
+    <div style="padding:12px 20px;border-top:1px solid rgba(255,255,255,0.08)">
+      <button class="btn btn-outline btn-sm" onclick="loginNewAccount()" style="width:100%;border-style:dashed">+ 登录新账号</button>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

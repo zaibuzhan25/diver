@@ -1,0 +1,94 @@
+/* ===== 深色模式 ===== */
+:root {
+  /* 浅色（默认） */
+  --warm-bg: #F7FAFC; --bg-body: #F7FAFC;
+  --bg-card: #FFFFFF;
+  --bg-nav: #1A365D;
+  --bg-input: #FFFFFF;
+  --text: #2D3748; --text-primary: #2D3748;
+  --gray: #718096; --text-secondary: #718096;
+  --text-nav: #FFFFFF;
+  --border-color: #E2E8F0;
+  --shadow: 0 2px 12px rgba(0,0,0,0.08);
+  --coral: #E8734A;
+  --navy: #1A365D;
+}
+
+[data-theme="dark"] {
+  --warm-bg: #1A202C; --bg-body: #1A202C;
+  --bg-card: #2D3748;
+  --bg-nav: #171923;
+  --bg-input: #2D3748;
+  --text: #E2E8F0; --text-primary: #E2E8F0;
+  --gray: #A0AEC0; --text-secondary: #A0AEC0;
+  --text-nav: #E2E8F0;
+  --border-color: #4A5568;
+  --shadow: 0 2px 12px rgba(0,0,0,0.3);
+  --coral: #F6AD55;
+  --navy: #E2E8F0;
+}
+
+/* 基础应用 */
+body {
+  background: var(--warm-bg) !important;
+  color: var(--text-primary) !important;
+  transition: background 0.3s ease, color 0.3s ease;
+}
+
+/* 卡片 */
+.card, .stat-card, .plan-card, .dest-card {
+  background: var(--bg-card) !important;
+  border-color: var(--border-color) !important;
+  box-shadow: var(--shadow) !important;
+}
+
+/* 侧边栏 */
+.sidebar {
+  background: var(--bg-nav) !important;
+}
+.sidebar * { color: var(--text-nav) !important; }
+
+/* 输入框 */
+input, select, textarea {
+  background: var(--bg-input) !important;
+  color: var(--text-primary) !important;
+  border-color: var(--border-color) !important;
+}
+
+/* 表格 */
+table th { background: var(--warm-bg) !important; }
+table td { border-color: var(--border-color) !important; }
+
+/* 模态框 */
+.modal {
+  background: var(--bg-card) !important;
+  color: var(--text-primary) !important;
+}
+
+/* 主题切换按钮 */
+.theme-switch {
+  display: inline-flex;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 20px;
+  overflow: hidden;
+  margin-left: 12px;
+}
+.theme-switch button {
+  background: none;
+  border: none;
+  padding: 4px 10px;
+  cursor: pointer;
+  font-size: 13px;
+  color: var(--text-secondary);
+  transition: all 0.2s;
+}
+.theme-switch button:not(.active):hover {
+  background: var(--border-color);
+  color: var(--text-primary);
+}
+.theme-switch button.active {
+  background: var(--coral);
+  color: #fff;
+  border-radius: 12px;
+}

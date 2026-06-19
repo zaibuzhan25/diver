@@ -1,0 +1,323 @@
+/* user-fix.css — 修复 user.html 接入设计系统后的样式冲突
+ * 策略：全部使用 var() 引用 CSS 变量，让 [data-theme] 变量定义自动驱动主题切换
+ * 重要：不要在此文件重新定义 :root 变量，变量定义在 user.html 内联样式中
+ * 加载顺序：在 modern-design.css 和 nebula-effects.css 之后
+ */
+
+/* ══════════════ 恢复 body 基准样式 ══════════════ */
+body {
+  background: var(--warm-bg) !important;
+  color: var(--text) !important;
+  transition: background 0.3s ease, color 0.3s ease;
+}
+
+/* ═══════════════ 头部 ══════════════ */
+.header {
+  background: var(--warm-bg) !important;
+  backdrop-filter: blur(12px) !important;
+  border-bottom: 1px solid var(--border-color) !important;
+  color: var(--text) !important;
+}
+.header .header-brand { color: var(--navy) !important; }
+.header .header-user { color: var(--text) !important; }
+
+/* ══════════════ 公告横幅 ══════════════ */
+.announce-banner {
+  background: linear-gradient(135deg,#EFF6FF,#FEF3EE);
+  border-bottom-color: #FDE2D0;
+  color: var(--navy);
+}
+html[data-theme="dark"] .announce-banner {
+  background: rgba(19,24,32,0.7) !important;
+  border-bottom-color: rgba(255,255,255,0.08) !important;
+  color: var(--text) !important;
+}
+html[data-theme="dark"] .announce-banner .ann-text strong {
+  color: #F5A87A !important;
+}
+
+/* ══════════════ Tab 导航栏 ══════════════ */
+.tabs {
+  background: var(--bg-card) !important;
+  border-bottom-color: var(--border-color) !important;
+}
+.tabs button { color: var(--gray) !important; }
+.tabs button:hover { color: var(--navy) !important; }
+.tabs button.active { color: var(--coral) !important; border-bottom-color: var(--coral) !important; }
+
+/* ══════════════ Hero ══════════════ */
+.hero { color: #fff !important; }
+html[data-theme="dark"] .hero { color: var(--text) !important; }
+
+/* ══════════════ 轮播 ══════════════ */
+.carousel {
+  background: var(--bg-card) !important;
+  box-shadow: var(--shadow) !important;
+}
+.carousel-slide .slide-info h3 { color: #fff !important; }
+.carousel-slide .slide-info p { color: rgba(255,255,255,0.85) !important; }
+html[data-theme="dark"] .carousel-slide .slide-info h3 { color: var(--text) !important; }
+html[data-theme="dark"] .carousel-slide .slide-info p { color: var(--text-secondary) !important; }
+
+/* ══════════════ 目的地卡片（Nebula Glass 风格） ══════════════ */
+.dest-card {
+  background: var(--glass-bg, rgba(255,255,255,0.04)) !important;
+  border: 1px solid var(--glass-border, rgba(255,255,255,0.08)) !important;
+  border-radius: 20px !important;
+  backdrop-filter: saturate(180%) blur(20px) !important;
+}
+.dest-card .body h3 { color: var(--text-primary) !important; }
+.dest-card .body .location { color: var(--text-secondary) !important; }
+.dest-card .body .desc { color: var(--text-muted) !important; }
+.dest-card .img .badge {
+  background: rgba(255,255,255,0.75) !important;
+  color: var(--navy,#1A365D) !important;
+  border: 1px solid rgba(26,54,93,0.12) !important;
+}
+html[data-theme="dark"] .dest-card .img .badge {
+  background: rgba(8,12,20,0.7) !important;
+  color: #93C5FD !important;
+  border-color: rgba(147,197,253,0.15) !important;
+}
+
+/* ══════════════ 热门方案卡片 ══════════════ */
+.hot-plan-card {
+  background: var(--bg-card) !important;
+  border-color: var(--border-color) !important;
+  box-shadow: var(--shadow) !important;
+}
+.hot-plan-card h4 { color: var(--navy) !important; }
+.hot-plan-card .meta { color: var(--gray) !important; }
+.hot-plan-card .dest-tag { background: var(--navy-light) !important; color: var(--navy) !important; }
+.hot-plan-card .hot-badge { background: var(--coral-light) !important; color: var(--coral) !important; }
+
+/* ══════════════ 计划卡片 ══════════════ */
+.plan-card {
+  background: var(--bg-card) !important;
+  border-color: var(--border-color) !important;
+  box-shadow: var(--shadow) !important;
+}
+.plan-card h4 { color: var(--navy) !important; }
+.plan-card .meta { color: var(--gray) !important; }
+.plan-card .actions { border-top-color: var(--border-color) !important; }
+
+/* ══════════════ 按钮系统 ══════════════ */
+.btn-primary {
+  background: var(--coral) !important;
+  color: #fff !important;
+}
+.btn-primary:hover { background: var(--coral-dark) !important; }
+
+.btn-secondary {
+  background: var(--bg-card) !important;
+  color: var(--text) !important;
+  border: 1px solid var(--border-color) !important;
+}
+.btn-secondary:hover { background: rgba(0,0,0,0.04) !important; }
+html[data-theme="dark"] .btn-secondary:hover { background: rgba(255,255,255,0.08) !important; }
+
+.btn-outline {
+  background: var(--bg-card) !important;
+  color: var(--text) !important;
+  border-color: var(--border-color) !important;
+}
+.btn-outline:hover { border-color: var(--coral) !important; color: var(--coral) !important; }
+
+.btn-danger {
+  background: var(--bg-card) !important;
+  color: var(--red) !important;
+  border-color: #FED7D7 !important;
+}
+.btn-danger:hover { background: #FFF5F5 !important; border-color: var(--red) !important; }
+
+/* ══════════════ 模态框 / 向导 / 搜索面板 ══════════════ */
+.modal-overlay,
+.dest-detail-overlay,
+.wizard-overlay,
+.search-overlay {
+  position: fixed !important;
+  inset: 0 !important;
+  background: rgba(0,0,0,0.45) !important;
+  z-index: 200 !important;
+  display: none !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+.modal-overlay.show,
+.dest-detail-overlay.show,
+.wizard-overlay.show,
+.search-overlay.show { display: flex !important; }
+
+.modal-panel,
+.dest-detail-card,
+.wizard-panel,
+.search-panel {
+  background: var(--bg-card) !important;
+  color: var(--text) !important;
+  border-radius: 16px !important;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.15) !important;
+  border: none !important;
+}
+
+html[data-theme="dark"] .modal-overlay,
+html[data-theme="dark"] .dest-detail-overlay,
+html[data-theme="dark"] .wizard-overlay,
+html[data-theme="dark"] .search-overlay {
+  background: rgba(0,0,0,0.65) !important;
+}
+html[data-theme="dark"] .modal-panel,
+html[data-theme="dark"] .dest-detail-card,
+html[data-theme="dark"] .wizard-panel,
+html[data-theme="dark"] .search-panel {
+  box-shadow: 0 20px 60px rgba(0,0,0,0.5) !important;
+}
+
+/* ══════════════ 表单元素 ══════════════ */
+input, select, textarea {
+  background: var(--bg-input) !important;
+  color: var(--text) !important;
+  border: 1px solid var(--border-color) !important;
+}
+input:focus, select:focus, textarea:focus { border-color: var(--coral) !important; }
+
+/* ══════════════ 搜索结果 ══════════════ */
+.search-result-item:hover,
+.search-result-item.active { background: #F0F4FF !important; }
+html[data-theme="dark"] .search-result-item:hover,
+html[data-theme="dark"] .search-result-item.active { background: rgba(59,130,246,0.15) !important; }
+
+/* ══════════════ 模板卡片 ══════════════ */
+.template-card {
+  background: var(--bg-card) !important;
+  border-color: var(--border-color) !important;
+}
+.template-card.selected { border-color: var(--coral) !important; background: var(--coral-light) !important; }
+
+/* ══════════════ Wizard 步骤 ══════════════ */
+.wizard-step-dot {
+  background: #F3F4F6 !important;
+  color: var(--gray) !important;
+}
+.wizard-step-dot.active { background: var(--coral) !important; color: #fff !important; }
+.wizard-step-dot.done { background: var(--green) !important; color: #fff !important; }
+html[data-theme="dark"] .wizard-step-dot { background: rgba(255,255,255,0.08) !important; }
+
+/* ══════════════ 个人中心 ══════════════ */
+.profile-card,
+.profile-tabs,
+.profile-plan-item,
+.fav-card {
+  background: var(--bg-card) !important;
+  border-color: var(--border-color) !important;
+}
+/* history-item 用玻璃拟态样式，不在 user-fix 中覆盖 */
+.profile-tab.active { background: var(--coral,#E8734A) !important; color: #fff !important; }
+.profile-tab:not(.active):hover { background: #F3F4F6 !important; }
+html[data-theme="dark"] .profile-tab:not(.active):hover { background: rgba(255,255,255,0.05) !important; }
+html[data-theme="dark"] .profile-tab.active { background: var(--coral,#E8734A) !important; }
+
+/* ══════════════ 表单区域 & 行程编辑 ══════════════ */
+.form-card {
+  background: var(--bg-card) !important;
+  border-color: var(--border-color) !important;
+  box-shadow: var(--shadow) !important;
+}
+.itinerary-day { border-color: var(--border-color) !important; }
+.itinerary-day .day-header {
+  background: #F0F9FF !important;
+  border-bottom-color: var(--border-color) !important;
+  color: var(--navy) !important;
+}
+.itinerary-day .day-item { border-bottom-color: #F7FAFC !important; }
+html[data-theme="dark"] .itinerary-day .day-header {
+  background: rgba(30,58,95,0.5) !important;
+  color: var(--navy) !important;
+}
+html[data-theme="dark"] .itinerary-day .day-item { border-bottom-color: rgba(255,255,255,0.05) !important; }
+
+/* ══════════════ 方案详情弹窗 ══════════════ */
+.detail-overlay { background: rgba(0,0,0,0.4) !important; }
+.detail-card {
+  background: var(--bg-card) !important;
+  box-shadow: 0 24px 64px rgba(0,0,0,0.2) !important;
+}
+.detail-card .row { border-bottom-color: var(--border-color) !important; }
+html[data-theme="dark"] .detail-overlay { background: rgba(0,0,0,0.6) !important; }
+
+/* ══════════════ 切换账号弹窗 ══════════════ */
+.account-item:hover { background: var(--navy-light) !important; }
+html[data-theme="dark"] .account-item:hover { background: rgba(255,255,255,0.05) !important; }
+
+/* ══════════════ 主题切换按钮自身 ══════════════ */
+.theme-toggle {
+  background: var(--bg-card) !important;
+  border-color: var(--border-color) !important;
+}
+.theme-option { color: var(--gray) !important; }
+.theme-option.active { background: var(--coral) !important; color: #fff !important; }
+
+/* ══════════════ 退出/搜索按钮 ══════════════ */
+.btn-logout,
+.btn-search {
+  background: var(--bg-card) !important;
+  color: var(--gray) !important;
+  border-color: var(--border-color) !important;
+}
+.btn-logout:hover { border-color: var(--red) !important; color: var(--red) !important; }
+.btn-search:hover { border-color: var(--coral) !important; color: var(--coral) !important; }
+
+/* ══════════════ 空状态 ══════════════ */
+.empty { color: var(--gray) !important; }
+.empty .btn {
+  background: var(--bg-card) !important;
+  color: var(--text) !important;
+  border-color: var(--border-color) !important;
+}
+
+/* ══════════════ Toast 容器定位 ══════════════ */
+.toast-container {
+  position: fixed !important;
+  top: 20px !important;
+  right: 20px !important;
+  z-index: 300 !important;
+}
+
+/* ══════════════ 深色模式：JS 动态内联样式兜底 ══════════════ */
+html[data-theme="dark"] #itinerary-editor {
+  background: var(--bg-input) !important;
+  border-color: var(--border-color) !important;
+}
+html[data-theme="dark"] #wiz-selected-dests {
+  background: rgba(255,255,255,0.04) !important;
+}
+html[data-theme="dark"] #view-dest-desc { color: var(--text-secondary) !important; }
+html[data-theme="dark"] #favorite-btn {
+  background: var(--bg-card) !important;
+  border-color: var(--border-color) !important;
+}
+html[data-theme="dark"] kbd,
+html[data-theme="dark"] .search-input-wrap kbd {
+  background: rgba(255,255,255,0.08) !important;
+  color: var(--gray) !important;
+  border-color: var(--border-color) !important;
+}
+html[data-theme="dark"] .modal-close:hover { background: rgba(255,255,255,0.08) !important; }
+html[data-theme="dark"] .ann-close:hover { background: rgba(248,113,113,0.2) !important; }
+html[data-theme="dark"] .btn-icon {
+  background: var(--bg-card) !important;
+  border-color: var(--border-color) !important;
+  color: var(--gray) !important;
+}
+html[data-theme="dark"] .btn-icon:hover {
+  background: var(--coral-light) !important;
+  border-color: var(--coral) !important;
+  color: var(--coral) !important;
+}
+html[data-theme="dark"] .time-step {
+  background: rgba(255,255,255,0.06) !important;
+  border-color: var(--border-color) !important;
+  color: var(--gray) !important;
+}
+html[data-theme="dark"] .time-quick { background: rgba(249,115,22,0.15) !important; }
+html[data-theme="dark"] .detail-card .close-btn { background: var(--bg-input) !important; }
+html[data-theme="dark"] .detail-card .close-btn:hover { background: var(--border-color) !important; }
